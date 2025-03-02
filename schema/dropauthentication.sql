@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      dropauthentication.sql                                          *
- * Created:   16/11/2024, 16:42                                               *
- * Modified:  16/11/2024, 16:43                                               *
+ * Created:   02/03/2025, 19:31                                               *
+ * Modified:  02/03/2025, 19:31                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *

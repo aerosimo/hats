@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      droperrorhospital.sql                                           *
- * Created:   26/10/2024, 21:37                                               *
- * Modified:  26/10/2024, 21:37                                               *
+ * Created:   02/03/2025, 19:30                                               *
+ * Modified:  02/03/2025, 19:30                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -28,7 +29,6 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
-
 
 PROMPT "Dropping ErrorHospital Schema."
 SET SERVEROUTPUT ON;

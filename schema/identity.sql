@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      identity.sql                                                    *
- * Created:   16/11/2024, 11:25                                               *
- * Modified:  16/11/2024, 11:25                                               *
+ * Created:   02/03/2025, 19:11                                               *
+ * Modified:  02/03/2025, 19:12                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -387,9 +388,9 @@ PROMPT "Creating Identity Header Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE identity_pkg
 AS
-    /* $Header: identity_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Header: identity_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -417,7 +418,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Identity
@@ -465,9 +466,9 @@ PROMPT "Creating Identity Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY identity_pkg
 AS
-    /* $Body: identity_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Body: identity_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -495,7 +496,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Identity

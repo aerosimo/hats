@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      dropaccount.sql                                                 *
- * Created:   16/11/2024, 11:18                                               *
- * Modified:  16/11/2024, 11:18                                               *
+ * Created:   02/03/2025, 19:32                                               *
+ * Modified:  02/03/2025, 19:32                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *

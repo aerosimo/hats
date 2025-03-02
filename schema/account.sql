@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      account.sql                                                     *
- * Created:   16/11/2024, 10:51                                               *
- * Modified:  16/11/2024, 10:51                                               *
+ * Created:   02/03/2025, 19:00                                               *
+ * Modified:  02/03/2025, 19:01                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -43,7 +44,7 @@ CREATE TABLE account_tbl
     pword         		VARCHAR2(400 BYTE),
     email         		VARCHAR2(50 BYTE),
     emailVerified 		CHAR(1),
-	verificationCode	VARCHAR2(100 BYTE),
+    verificationCode	VARCHAR2(100 BYTE),
     failedLogin   		NUMBER DEFAULT 0,
     lastLogin     		TIMESTAMP,
     status        		VARCHAR2(50 BYTE),
@@ -93,8 +94,8 @@ DECLARE
 BEGIN
     IF INSERTING THEN
         SELECT 'AER' || LPAD((1 + ABS(MOD(dbms_random.random, 100000))), 6, '000') INTO :NEW.accountid FROM DUAL;
-		SELECT dbms_random.string('X', 50) INTO :NEW.verificationCode FROM DUAL;
-		SELECT 'N' INTO :NEW.emailVerified FROM DUAL;
+        SELECT dbms_random.string('X', 50) INTO :NEW.verificationCode FROM DUAL;
+        SELECT 'N' INTO :NEW.emailVerified FROM DUAL;
         IF :NEW.uname IS NULL THEN
             RAISE_APPLICATION_ERROR(-20004, 'Username is Mandatory and cannot be empty.');
         END IF;
@@ -133,9 +134,9 @@ PROMPT "Creating Account Header Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE account_pkg
 AS
-    /* $Header: account_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Header: account_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -163,7 +164,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Account
@@ -173,13 +174,13 @@ HISTORY
         i_email IN account_tbl.email%TYPE,
         i_modifiedBy IN account_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2);
-		
+
     PROCEDURE VerifyAccount(
         i_email IN account_tbl.email%TYPE,
-		i_code IN account_tbl.verificationCode%TYPE,
+        i_code IN account_tbl.verificationCode%TYPE,
         i_modifiedBy IN account_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2);
-		
+
 END account_pkg;
 /
 
@@ -188,9 +189,9 @@ PROMPT "Creating Account Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY account_pkg
 AS
-    /* $Body: account_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Body: account_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -218,7 +219,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Account
@@ -257,31 +258,31 @@ HISTORY
         );
         o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
     END SaveAccount;
-	
-	PROCEDURE VerifyAccount(
+
+    PROCEDURE VerifyAccount(
         i_email IN account_tbl.email%TYPE,
-		i_code IN account_tbl.verificationCode%TYPE,
+        i_code IN account_tbl.verificationCode%TYPE,
         i_modifiedBy IN account_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2)
-	AS
-		v_count NUMBER;
-		v_response      VARCHAR2(100);
-		v_error_message VARCHAR2(4000);
+    AS
+        v_count NUMBER;
+        v_response      VARCHAR2(100);
+        v_error_message VARCHAR2(4000);
     BEGIN
-		SELECT COUNT(*) INTO v_count 
-		FROM account_tbl 
-		WHERE email = i_email
-		AND verificationCode = i_code;
-		IF v_count = 1 THEN
-        UPDATE account_tbl
-        SET emailVerified = 'Y',
-            verificationCode = NULL,
-			modifiedBy = i_modifiedBy
-        WHERE email = i_email;
-			o_response := 'Email verified successfully';
-		ELSE
-			o_response := 'Invalid verification code';
-		END IF;
+        SELECT COUNT(*) INTO v_count
+        FROM account_tbl
+        WHERE email = i_email
+          AND verificationCode = i_code;
+        IF v_count = 1 THEN
+            UPDATE account_tbl
+            SET emailVerified = 'Y',
+                verificationCode = NULL,
+                modifiedBy = i_modifiedBy
+            WHERE email = i_email;
+            o_response := 'Email verified successfully';
+        ELSE
+            o_response := 'Invalid verification code';
+        END IF;
     EXCEPTION
         WHEN OTHERS THEN ROLLBACK;
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
@@ -293,7 +294,7 @@ HISTORY
         );
         o_response := 'Error occurred during verification: ' || SQLCODE || SUBSTR(SQLERRM, 1, 2000);
     END VerifyAccount;
-	
+
 END account_pkg;
 /
 

@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      deinstall.sql                                                   *
- * Created:   26/10/2024, 21:18                                               *
- * Modified:  26/10/2024, 21:18                                               *
+ * Created:   02/03/2025, 19:34                                               *
+ * Modified:  02/03/2025, 19:35                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -28,7 +29,7 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
- 
+
 PROMPT "Dropping Schema for hats Project."
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;

@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      profile.sql                                                     *
- * Created:   16/11/2024, 12:34                                               *
- * Modified:  16/11/2024, 12:35                                               *
+ * Created:   02/03/2025, 19:16                                               *
+ * Modified:  02/03/2025, 19:16                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -202,9 +203,9 @@ PROMPT "Creating Profile Header Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE profile_pkg
 AS
-    /* $Header: profile_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Header: profile_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -232,7 +233,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Profile
@@ -262,9 +263,9 @@ PROMPT "Creating Profile Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY profile_pkg
 AS
-    /* $Body: profile_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Body: profile_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -292,7 +293,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Profile

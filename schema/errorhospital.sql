@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      errorhospital.sql                                               *
- * Created:   26/10/2024, 21:19                                               *
- * Modified:  26/10/2024, 21:20                                               *
+ * Created:   02/03/2025, 19:01                                               *
+ * Modified:  02/03/2025, 19:02                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -72,16 +73,16 @@ END;
 
 PROMPT "Enabling Triggers"
 -- Enable Triggers
-    ALTER TRIGGER ErrorHospital_trg ENABLE;
+ALTER TRIGGER ErrorHospital_trg ENABLE;
 
 PROMPT "Creating User ErrorHospital Header Package"
 
 -- Create Packages
 CREATE OR REPLACE PACKAGE ErrorHospital_pkg
 AS
-    /* $Header: ErrorHospital_pkg. 1.0.0 26-OCT-24 21:28 Package
+    /* $Header: ErrorHospital_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -109,7 +110,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Log new error
@@ -132,9 +133,9 @@ PROMPT "Creating User ErrorHospital Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY ErrorHospital_pkg
 AS
-    /* $Body: ErrorHospital_pkg. 1.0.0 26-OCT-24 21:35 Package
+    /* $Body: ErrorHospital_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -162,7 +163,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Log new error

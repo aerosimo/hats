@@ -1,12 +1,13 @@
+
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.          	  *
+ * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      authentication.sql                                              *
- * Created:   16/11/2024, 16:03                                               *
- * Modified:  16/11/2024, 16:03                                               *
+ * Created:   02/03/2025, 19:08                                               *
+ * Modified:  02/03/2025, 19:08                                               *
  *                                                                            *
- * Copyright (c)  2024.  Aerosimo Ltd                                         *
+ * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -113,9 +114,9 @@ PROMPT "Creating Authentication Header Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE authentication_pkg
 AS
-    /* $Header: authentication_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Header: authentication_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -143,14 +144,14 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Authentication
     PROCEDURE loginUser(
         i_username IN account_tbl.uname%TYPE,
         i_password IN account_tbl.pword%TYPE,
-		o_accountid OUT VARCHAR2,
+        o_accountid OUT VARCHAR2,
         o_token OUT VARCHAR2,
         o_response OUT VARCHAR2);
 
@@ -174,9 +175,9 @@ PROMPT "Creating Authentication Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY authentication_pkg
 AS
-    /* $Body: authentication_pkg. 1.0.0 26-OCT-24 22:44 Package
+    /* $Body: authentication_pkg. 1.0.0 02-Mar-25 19:02 Package
 =================================================================================
-  Copyright (c) 2024 Aerosimo
+  Copyright (c) 2025 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -204,14 +205,14 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 26-OCT-24	| eomisore 	| Created initial script.|
+| 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Create or Update Authentication
     PROCEDURE loginUser(
         i_username IN account_tbl.uname%TYPE,
         i_password IN account_tbl.pword%TYPE,
-		o_accountid OUT VARCHAR2,
+        o_accountid OUT VARCHAR2,
         o_token OUT VARCHAR2,
         o_response OUT VARCHAR2)
     AS
@@ -249,7 +250,7 @@ HISTORY
         -- Generate and return authentication token
         generateToken(v_accountid, o_token, v_token);
         o_accountid := v_accountid;
-		o_token := v_token;
+        o_token := v_token;
         o_response := 'Login successful';
 
     EXCEPTION
