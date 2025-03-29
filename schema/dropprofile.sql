@@ -37,6 +37,8 @@ PROMPT "Dropping Profile Tables"
 DROP TABLE country_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE profile_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE profile_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE horoscope_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE horoscope_tbl CASCADE CONSTRAINTS purge;
 
 PROMPT "Dropping Profile Package"
 DROP PACKAGE profile_pkg;

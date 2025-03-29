@@ -187,10 +187,6 @@ ALTER TABLE person_tbl
                                                'Viscount', 'Viscountess')) ENABLE;
 ALTER TABLE person_tbl
     ADD CONSTRAINT pergen_chk CHECK (gender IN ('Male', 'Female')) ENABLE;
-ALTER TABLE person_tbl
-    ADD CONSTRAINT perzod_chk CHECK (zodiac IN ('Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
-                                                'Virgo', 'Libra', 'Scorpio', 'Sagittarius',
-                                                'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
 ALTER TABLE contact_tbl
     ADD CONSTRAINT channel_chk CHECK (channel IN ('Phone', 'Email', 'Fax', 'Twitter', 'Facebook',
                                                   'LinkedIn', 'Snapchat', 'Website')) ENABLE;
