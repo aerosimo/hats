@@ -1,3 +1,6 @@
+PROMPT "Creating Authentication Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -29,10 +32,6 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
-
-PROMPT "Creating Authentication Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
 
 PROMPT "Creating Tables"
 

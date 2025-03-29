@@ -1,3 +1,6 @@
+PROMPT "Creating Profile Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      profile.sql                                                     *
  * Created:   02/03/2025, 19:16                                               *
- * Modified:  02/03/2025, 19:16                                               *
+ * Modified:  15/03/2025, 16:09                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -29,10 +32,6 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
-
-PROMPT "Creating Profile Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
 
 PROMPT "Creating Tables"
 
@@ -62,9 +61,18 @@ CREATE TABLE profile_tbl
     eyeColour     VARCHAR2(20 BYTE),
     phenotype     VARCHAR2(50 BYTE),
     genotype      VARCHAR2(50 BYTE),
-    disable       VARCHAR2(50 BYTE),
+    disability    VARCHAR2(50 BYTE),
     modifiedBy    VARCHAR2(50 BYTE),
     modifiedDate  TIMESTAMP
+);
+
+CREATE TABLE horoscope_tbl
+(
+    zodiac       VARCHAR2(20 BYTE),
+    currentDay   VARCHAR2(50 BYTE),
+    narrative    VARCHAR2(4000 BYTE),
+    modifiedBy   VARCHAR2(50 BYTE),
+    modifiedDate TIMESTAMP
 );
 
 PROMPT "Commenting Tables"
@@ -90,59 +98,105 @@ COMMENT ON COLUMN profile_tbl.ethnicity IS 'This is the fact or state of belongi
 COMMENT ON COLUMN profile_tbl.religion IS 'The belief in and worship of a superhuman controlling power, especially a personal God or gods.';
 COMMENT ON COLUMN profile_tbl.eyeColour IS 'This is a polygenic phenotypic character determined by two distinct factors: pigmentation of the eye and the scattering of light by the turbid medium in the stroma of the iris';
 COMMENT ON COLUMN profile_tbl.phenotype IS 'This is a classification of blood based on the presence and absence of antibodies and inherited antigenic substances on the surface of red blood cells.';
-COMMENT ON COLUMN profile_tbl.disable IS 'This is indicate if the person is Disable or not';
+COMMENT ON COLUMN profile_tbl.disability IS 'This is indicate if the person is disable or not';
 COMMENT ON COLUMN profile_tbl.genotype IS 'This is the genetic constitution of an individual organism.';
 COMMENT ON COLUMN profile_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN profile_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE profile_tbl IS 'Profile information for a Contact.';
 
+COMMENT ON TABLE horoscope_tbl IS 'Profile information for list of daily horoscope based on signs.';
+COMMENT ON COLUMN horoscope_tbl.zodiac IS 'The zodiac is an area of the sky that extends approximately 8° north or south (as measured in celestial latitude) of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
+COMMENT ON COLUMN horoscope_tbl.currentDay IS 'The current date means the date today or the date when something will happen.';
+COMMENT ON COLUMN horoscope_tbl.narrative IS 'Your Zodiac sign, or star sign, reflects the position of the sun when you were born. With its strong influence on your personality, character, and emotions, your sign is a powerful tool for understanding yourself and your relationships and of course, your sign can show you the way to an incredible life.';
+COMMENT ON COLUMN horoscope_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN horoscope_tbl.modifiedDate IS 'Audit column - date of last update.';
+
+-- Create profile history table
+CREATE TABLE profile_history_tbl AS
+SELECT *
+FROM profile_tbl
+WHERE 1 = 0;
+ALTER TABLE profile_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE profile_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+
+-- Create horoscope history table
+CREATE TABLE horoscope_history_tbl AS
+SELECT *
+FROM horoscope_tbl
+WHERE 1 = 0;
+ALTER TABLE horoscope_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE horoscope_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+
 PROMPT "Setting Constraints"
 
 -- Setting Unique Key
-ALTER TABLE country_tbl ADD CONSTRAINT alpha_unq UNIQUE (alpha2);
+ALTER TABLE country_tbl
+    ADD CONSTRAINT alpha_unq UNIQUE (alpha2);
+ALTER TABLE horoscope_tbl
+    ADD CONSTRAINT zodiac_unq UNIQUE (zodiac);
 
 -- Setting Foreign Key
-ALTER TABLE profile_tbl ADD CONSTRAINT profile_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
-ALTER TABLE address_tbl ADD CONSTRAINT addcou_fk FOREIGN KEY (country) REFERENCES country_tbl (alpha2);
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT profile_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
+ALTER TABLE address_tbl
+    ADD CONSTRAINT addcou_fk FOREIGN KEY (country) REFERENCES country_tbl (alpha2);
+ALTER TABLE person_tbl
+    ADD CONSTRAINT perzod_fk FOREIGN KEY (zodiac) REFERENCES horoscope_tbl (zodiac);
 
 -- Setting Check Constraint
-ALTER TABLE profile_tbl ADD CONSTRAINT maritalStatus_Chk CHECK (maritalStatus IN ('Separated', 'Widowed', 'Single',
-                                                                                  'Married', 'Lone', 'Live-in',
-                                                                                  'Estranged', 'EngAged', 'Divorced',
-                                                                                  'De Facto', 'Common Law')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT genotype_Chk CHECK (genotype IN ('AA', 'AS', 'SS', 'AC')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT phenotype_Chk CHECK (phenotype IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-',
-                                                                          'AB+', 'AB-')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT religion_Chk CHECK (religion IN ('Christianity', 'Islam', 'Atheist', 'Hinduism',
-                                                                        'Buddhism', 'Sikhism', 'Judaism')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT disable_Chk CHECK (disable IN ('Spina Bifida', 'Spinal Cord Injury',
-                                                                      'Amputation', 'Diabetes',
-                                                                      'Chronic Fatigue Syndrome', 'Carpal Tunnel',
-                                                                      'Arthritis', 'Learning Disability',
-                                                                      'Traumatic Brain Injury', 'AD/HD', 'Depression',
-                                                                      'Bipolar Disorder', 'Schizophrenia',
-                                                                      'Eating Disorder', 'Anxiety',
-                                                                      'Post Traumatic Stress Disorder', 'Blindness',
-                                                                      'Deafness', 'Visual Impairment',
-                                                                      'Hard Of Hearing', 'None')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT eyeColour_Chk CHECK (eyeColour IN ('Amber', 'Blue', 'Brown', 'Grey', 'Green',
-                                                                          'Hazel', 'Red', 'Violet')) ENABLE;
-ALTER TABLE profile_tbl ADD CONSTRAINT ethnicity_Chk CHECK (ethnicity IN ('Indian', 'Pakistani', 'Bangladeshi',
-                                                                          'Caribbean', 'African', 'Chinese', 'Arab',
-                                                                          'British', 'Irish',
-                                                                          'Any other White background',
-                                                                          'Any other mixed background',
-                                                                          'White and Asian', 'White and Black African',
-                                                                          'White and Black Caribbean',
-                                                                          'Any other Asian background',
-                                                                          'Any other Black background',
-                                                                          'Any other ethnic group')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT maritalStatus_Chk CHECK (maritalStatus IN ('Separated', 'Widowed', 'Single',
+                                                              'Married', 'Lone', 'Live-in',
+                                                              'Estranged', 'EngAged', 'Divorced',
+                                                              'De Facto', 'Common Law')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT genotype_Chk CHECK (genotype IN ('AA', 'AS', 'SS', 'AC')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT phenotype_Chk CHECK (phenotype IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-',
+                                                      'AB+', 'AB-')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT religion_Chk CHECK (religion IN ('Christianity', 'Islam', 'Atheist', 'Hinduism',
+                                                    'Buddhism', 'Sikhism', 'Judaism')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT disability_Chk CHECK (disability IN ('Spina Bifida', 'Spinal Cord Injury',
+                                                        'Amputation', 'Diabetes',
+                                                        'Chronic Fatigue Syndrome', 'Carpal Tunnel',
+                                                        'Arthritis', 'Learning Disability',
+                                                        'Traumatic Brain Injury', 'AD/HD', 'Depression',
+                                                        'Bipolar Disorder', 'Schizophrenia',
+                                                        'Eating Disorder', 'Anxiety',
+                                                        'Post Traumatic Stress Disorder', 'Blindness',
+                                                        'Deafness', 'Visual Impairment',
+                                                        'Hard Of Hearing', 'None')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT eyeColour_Chk CHECK (eyeColour IN ('Amber', 'Blue', 'Brown', 'Grey', 'Green',
+                                                      'Hazel', 'Red', 'Violet')) ENABLE;
+ALTER TABLE profile_tbl
+    ADD CONSTRAINT ethnicity_Chk CHECK (ethnicity IN ('Indian', 'Pakistani', 'Bangladeshi',
+                                                      'Caribbean', 'African', 'Chinese', 'Arab',
+                                                      'British', 'Irish',
+                                                      'Any other White background',
+                                                      'Any other mixed background',
+                                                      'White and Asian', 'White and Black African',
+                                                      'White and Black Caribbean',
+                                                      'Any other Asian background',
+                                                      'Any other Black background',
+                                                      'Any other ethnic group')) ENABLE;
+ALTER TABLE horoscope_tbl
+    ADD CONSTRAINT zodiac_chk CHECK (zodiac IN ('Aries', 'Taurus', 'Gemini',
+                                                'Cancer', 'Leo', 'Virgo',
+                                                'Libra', 'Scorpio', 'Sagittarius',
+                                                'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
 
 PROMPT "Creating Triggers"
 
 -- Creating Triggers
 CREATE OR REPLACE TRIGGER profile_trg
-    BEFORE INSERT OR UPDATE
+    BEFORE INSERT
     ON profile_tbl
     FOR EACH ROW
 DECLARE
@@ -154,6 +208,63 @@ BEGIN
     END IF;
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
     IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'profile_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+-- Creating Triggers
+CREATE OR REPLACE TRIGGER profile_audit_trg
+    AFTER UPDATE OR DELETE
+    ON profile_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO profile_history_tbl(accountid, maritalStatus, height, weight, ethnicity, religion, eyeColour,
+                                    phenotype, genotype, disability, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.accountid, :OLD.maritalStatus, :OLD.height, :OLD.weight, :OLD.ethnicity, :OLD.religion, :OLD.eyeColour,
+            :OLD.phenotype, :OLD.genotype, :OLD.disability, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'profile_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER horoscope_trg
+    BEFORE INSERT OR UPDATE
+    ON horoscope_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message VARCHAR2(4000);
+    v_response      VARCHAR2(100);
+BEGIN
+    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
+    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -161,7 +272,38 @@ EXCEPTION
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'profile_trg for profile: ' || :NEW.accountid,
+                i_faultservice => 'horoscope_trg for profile: ' || :NEW.zodiac,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER horoscope_audit_trg
+    AFTER UPDATE OR DELETE
+    ON horoscope_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO horoscope_history_tbl(zodiac, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.zodiac, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'horoscope_trg (INSERT): ' || :NEW.zodiac,
                 o_response => v_response
         );
         RAISE;
@@ -197,13 +339,16 @@ PROMPT "Enabling Triggers"
 -- Enable Triggers
 ALTER TRIGGER profile_trg ENABLE;
 ALTER TRIGGER country_trg ENABLE;
+ALTER TRIGGER horoscope_trg ENABLE;
+ALTER TRIGGER horoscope_audit_trg ENABLE;
+ALTER TRIGGER profile_audit_trg ENABLE;
 
 PROMPT "Creating Profile Header Package"
 
 -- Create Packages
 CREATE OR REPLACE PACKAGE profile_pkg
 AS
-    /* $Header: profile_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Header: profile_pkg. 1.0.0 15-Mar-25 16:09 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -235,6 +380,8 @@ HISTORY
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
+| 15-Mar-25	| eomisore 	| Add history log to tables.|
+=================================================================================
 */
     -- Create or Update Profile
     PROCEDURE SaveProfile(
@@ -247,7 +394,7 @@ HISTORY
         i_eyeColour IN profile_tbl.eyeColour%TYPE,
         i_phenotype IN profile_tbl.phenotype%TYPE,
         i_genotype IN profile_tbl.genotype%TYPE,
-        i_disable IN profile_tbl.disable%TYPE,
+        i_disability IN profile_tbl.disability%TYPE,
         i_modifiedBy IN profile_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2);
 
@@ -263,7 +410,7 @@ PROMPT "Creating Profile Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY profile_pkg
 AS
-    /* $Body: profile_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Body: profile_pkg. 1.0.0 15-Mar-25 16:09 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -295,6 +442,8 @@ HISTORY
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
+| 15-Mar-25	| eomisore 	| Add history log to tables.|
+=================================================================================
 */
     -- Create or Update Profile
     PROCEDURE SaveProfile(
@@ -307,7 +456,7 @@ HISTORY
         i_eyeColour IN profile_tbl.eyeColour%TYPE,
         i_phenotype IN profile_tbl.phenotype%TYPE,
         i_genotype IN profile_tbl.genotype%TYPE,
-        i_disable IN profile_tbl.disable%TYPE,
+        i_disability IN profile_tbl.disability%TYPE,
         i_modifiedBy IN profile_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2)
     AS
@@ -324,15 +473,15 @@ HISTORY
             eyeColour     = i_eyeColour,
             phenotype     = i_phenotype,
             genotype      = i_genotype,
-            disable       = i_disable,
+            disability    = i_disability,
             modifiedBy    = i_modifiedBy
         WHERE accountid = i_accountid
         RETURNING accountid INTO o_response;
         IF SQL%NOTFOUND THEN
             INSERT INTO profile_tbl(accountid, maritalStatus, height, weight, ethnicity, religion, eyeColour, phenotype,
-                                    genotype, disable, modifiedBy)
+                                    genotype, disability, modifiedBy)
             VALUES (i_accountid, i_maritalStatus, i_height, i_weight, i_ethnicity, i_religion, i_eyeColour, i_phenotype,
-                    i_genotype, i_disable, i_modifiedBy)
+                    i_genotype, i_disability, i_modifiedBy)
             RETURNING accountid INTO o_response;
         END IF;
     EXCEPTION
@@ -370,6 +519,44 @@ ALTER PACKAGE profile_pkg COMPILE BODY;
 PROMPT "Inserting Initial Records"
 
 -- Insert initial records
+
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Aries', 'Mar 29, 2025',
+        'Unexpected visitors could wake you up to the possibility of new work opportunities, Aries. This could advance your current job or be work you can do on your own - maybe on a volunteer basis. Whatever it is, you will probably find it exciting. You might even be impatient to get on with it. Pace yourself. If you tire yourself out, you would not be able to continue.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Taurus', 'Mar 29, 2025',
+        'If you aren''t romantically involved, an errand, walk, or other foray into your neighborhood might bring an exciting new person into your life. This encounter may or may not lead to something lasting, Taurus, but you will enjoy it anyway! If you''re currently involved, a casual outing with your partner could result in intimate conversations that bring the two of you closer.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Gemini', 'Mar 29, 2025',
+        'Money that you may have been hoping to use to better your living or working condition could suddenly come your way today, Gemini. Ideas for how to put it to work in the most efficient, satisfying way could pop into your mind quickly. You will probably want to write them all down, consider your options carefully, and then choose the ones that suit your needs best. Go to it.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Cancer', 'Mar 29, 2025',
+        'When you run errands today, check the bulletin boards in local businesses. You may have been longing for adventure and dreaming about getting away from it all, Cancer, but today you might find the excitement you crave right in your community. New events, people, and businesses that you will enjoy could be moving in. You might also discover a group that shares one of your interests.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Leo', 'Mar 29, 2025',
+        'Information received today excites your imagination and encourages you to start a new artistic or creative project, Leo. Stories, pictures, abstract concepts - all could come together in your mind and form an inspired idea that could change your life. Gird your loins, write down your thoughts, and see where it all takes you. You might be surprised by what you produce!');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Virgo', 'Mar 29, 2025',
+        'Adventure is the word for today, Virgo. A lot of physical and mental energy, as well as enthusiasm, might lead you to aim for goals that others consider too risky or unrealistic. Don''t let their opinions stop you. After giving each idea an objective assessment, if you still believe you want to try, start looking into it seriously. People have probably made stranger dreams than this come true!');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Libra', 'Mar 29, 2025',
+        'New career goals may come your way with the current aspect, Libra, opening up possibilities you may not have considered. This could be very exciting. It might even work toward the fulfillment of childhood dreams that you abandoned long ago. They may involve the arts, modern technology, or both. The only downside is that you might work too hard and get exhausted. Pace yourself.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Scorpio', 'Mar 29, 2025',
+        'Fascinating new information could arrive today from TV or the Internet, opening up new educational opportunities. The possibility of making contact and perhaps visiting new friends in other countries might come to your attention. You will probably find this very exciting, Scorpio, and make plans immediately. This is fine, but be careful to consider all contingencies. Be practical and objective.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Sagittarius', 'Mar 29, 2025',
+        'A sudden burst of physical energy and determination could lead to additional income for you, Sagittarius. This is probably due to an unexpected opportunity to do some extra work outside the scope of your usual employment. It could also be a long overdue payment for past work. You could also receive acknowledgement of some kind for work well done, further firing your enthusiasm. Go for the gold!');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Capricorn', 'Mar 29, 2025',
+        'Friends or a group with which you''re affiliated could propose a trip. This might seem like a great adventure, Capricorn, so you''re likely to go for it. You will probably have a wonderful time. You might make some new friends while you''re away, or even fall in love. A little break might fire your enthusiasm for pursuing career or educational opportunities when you return. Go for it!');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Aquarius', 'Mar 29, 2025',
+        'An opportunity to do some extra work outside the scope of your regular job could present itself to you. Take it, Aquarius. Not only could you earn some extra money but you might also open new doors that expand your professional horizons. The only danger is that you might work too hard and tire yourself out. It''s OK for a while, but don''t make a habit of it. You need to conserve your strength.');
+INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+VALUES ('Pisces', 'Mar 29, 2025',
+        'You might be extremely busy now. Invitations to large parties, small gatherings with close friends, and intimate evenings with romantic partners might come up today. Be discriminating in those you accept, Pisces. Concentrate on seeing people who share your interests. This may bring new friends your way, as well as opportunities to expand your horizons. Romance looks great now.');
+
 INSERT INTO country_tbl (alpha2, alpha3, country, region, continent, dialPrefix, currencyCode, currencyName)
 VALUES ('AF', 'AFG', 'Afghanistan', 'South-Central Asia', 'Asia', '+93', 'AFN', 'Afghan Afghani');
 INSERT INTO country_tbl (alpha2, alpha3, country, region, continent, dialPrefix, currencyCode, currencyName)

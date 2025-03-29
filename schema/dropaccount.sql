@@ -1,3 +1,6 @@
+PROMPT "Dropping Account Schema"
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      dropaccount.sql                                                 *
  * Created:   02/03/2025, 19:32                                               *
- * Modified:  02/03/2025, 19:32                                               *
+ * Modified:  15/03/2025, 16:13                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -30,14 +33,8 @@
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Account Schema"
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
-PROMPT "Dropping Account Triggers"
-DROP TRIGGER account_trg;
-
 PROMPT "Dropping Account Tables"
+DROP TABLE account_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE account_tbl CASCADE CONSTRAINTS purge;
 
 PROMPT "Dropping Account Package"

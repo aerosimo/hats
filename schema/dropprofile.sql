@@ -1,3 +1,6 @@
+PROMPT "Dropping Prfile Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      dropprofile.sql                                                 *
  * Created:   02/03/2025, 19:32                                               *
- * Modified:  02/03/2025, 19:32                                               *
+ * Modified:  15/03/2025, 16:15                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -30,16 +33,9 @@
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Prfile Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
-PROMPT "Dropping Profile Triggers"
-DROP TRIGGER country_trg;
-DROP TRIGGER profile_trg;
-
 PROMPT "Dropping Profile Tables"
 DROP TABLE country_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE profile_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE profile_tbl CASCADE CONSTRAINTS purge;
 
 PROMPT "Dropping Profile Package"

@@ -1,3 +1,6 @@
+PROMPT "Dropping ErrorHospital Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -30,15 +33,8 @@
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping ErrorHospital Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
 PROMPT "Dropping Package"
 DROP PACKAGE ErrorHospital_pkg;
-
-PROMPT "Dropping Triggers"
-DROP TRIGGER ErrorHospital_trg;
 
 PROMPT "Dropping Tables"
 DROP TABLE ErrorHospital_tbl CASCADE CONSTRAINTS purge;

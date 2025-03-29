@@ -1,3 +1,6 @@
+PROMPT "Dropping Identity Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      dropidentity.sql                                                *
  * Created:   02/03/2025, 19:30                                               *
- * Modified:  02/03/2025, 19:30                                               *
+ * Modified:  15/03/2025, 16:17                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -30,18 +33,11 @@
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Identity Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
-PROMPT "Dropping Identity Triggers"
-DROP TRIGGER images_trg;
-DROP TRIGGER contact_trg;
-DROP TRIGGER address_trg;
-DROP TRIGGER person_trg;
-DROP TRIGGER syncaccount_trg;
-
 PROMPT "Dropping Identity Tables"
+DROP TABLE images_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE contact_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE address_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE person_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE images_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE contact_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE address_tbl CASCADE CONSTRAINTS purge;

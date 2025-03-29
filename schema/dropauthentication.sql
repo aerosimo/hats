@@ -1,3 +1,6 @@
+PROMPT "Dropping Authentication Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -29,13 +32,6 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
-
-PROMPT "Dropping Authentication Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
-PROMPT "Dropping Authentication Triggers"
-DROP TRIGGER usertoken_trg;
 
 PROMPT "Dropping Authentication Tables"
 DROP TABLE usertoken_tbl CASCADE CONSTRAINTS purge;

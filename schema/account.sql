@@ -1,3 +1,6 @@
+PROMPT "Creating Account Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      account.sql                                                     *
  * Created:   02/03/2025, 19:00                                               *
- * Modified:  02/03/2025, 19:01                                               *
+ * Modified:  15/03/2025, 11:12                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -39,22 +42,24 @@ PROMPT "Creating Tables"
 -- Create Tables
 CREATE TABLE account_tbl
 (
-    accountid     		VARCHAR2(20 BYTE),
-    uname         		VARCHAR2(100 BYTE),
-    pword         		VARCHAR2(400 BYTE),
-    email         		VARCHAR2(50 BYTE),
-    emailVerified 		CHAR(1),
-    verificationCode	VARCHAR2(100 BYTE),
-    failedLogin   		NUMBER DEFAULT 0,
-    lastLogin     		TIMESTAMP,
-    status        		VARCHAR2(50 BYTE),
-    modifiedBy    		VARCHAR2(50 BYTE),
-    modifiedDate  		TIMESTAMP
+    recordid         NUMBER GENERATED ALWAYS AS IDENTITY,
+    accountid        VARCHAR2(20 BYTE),
+    uname            VARCHAR2(100 BYTE),
+    pword            VARCHAR2(400 BYTE),
+    email            VARCHAR2(50 BYTE),
+    emailVerified    CHAR(1),
+    verificationCode VARCHAR2(100 BYTE),
+    failedLogin      NUMBER DEFAULT 0,
+    lastLogin        TIMESTAMP,
+    status           VARCHAR2(50 BYTE),
+    modifiedBy       VARCHAR2(50 BYTE),
+    modifiedDate     TIMESTAMP
 );
 
 PROMPT "Commenting Tables"
 
 -- Comment on tables
+COMMENT ON COLUMN account_tbl.recordid IS 'This is the account record primary identifier';
 COMMENT ON COLUMN account_tbl.accountid IS 'This is the account primary identifier';
 COMMENT ON COLUMN account_tbl.uname IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN account_tbl.pword IS 'This is contact set encrypted password';
@@ -71,53 +76,112 @@ COMMENT ON TABLE account_tbl IS 'A user account is a location on a network serve
 PROMPT "Setting Constraints"
 
 -- Setting Primary Key
-ALTER TABLE account_tbl ADD CONSTRAINT account_pk PRIMARY KEY (accountid);
+ALTER TABLE account_tbl
+    ADD CONSTRAINT account_pk PRIMARY KEY (recordid);
 
 -- Setting Unique Key
-ALTER TABLE account_tbl ADD CONSTRAINT email_unq UNIQUE (email);
-ALTER TABLE account_tbl ADD CONSTRAINT username_unq UNIQUE (uname);
+ALTER TABLE account_tbl
+    ADD CONSTRAINT account_unq UNIQUE (accountid);
+ALTER TABLE account_tbl
+    ADD CONSTRAINT email_unq UNIQUE (email);
+ALTER TABLE account_tbl
+    ADD CONSTRAINT username_unq UNIQUE (uname);
 
 -- Setting Check Constraint
-ALTER TABLE account_tbl ADD CONSTRAINT email_chk CHECK (emailVerified IN ('Y', 'N')) ENABLE;
-ALTER TABLE account_tbl ADD CONSTRAINT account_chk CHECK (status IN ('Active', 'Inactive')) ENABLE;
+ALTER TABLE account_tbl
+    ADD CONSTRAINT email_chk CHECK (emailVerified IN ('Y', 'N')) ENABLE;
+ALTER TABLE account_tbl
+    ADD CONSTRAINT account_chk CHECK (status IN ('Active', 'Inactive')) ENABLE;
+
+-- Create an account history table
+CREATE TABLE account_history_tbl AS
+SELECT *
+FROM account_tbl
+WHERE 1 = 0;
+ALTER TABLE account_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE account_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
 
 PROMPT "Creating Triggers"
 
 -- Creating Triggers
 CREATE OR REPLACE TRIGGER account_trg
-    BEFORE INSERT OR UPDATE
+    BEFORE INSERT
     ON account_tbl
     FOR EACH ROW
 DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
-    IF INSERTING THEN
-        SELECT 'AER' || LPAD((1 + ABS(MOD(dbms_random.random, 100000))), 6, '000') INTO :NEW.accountid FROM DUAL;
-        SELECT dbms_random.string('X', 50) INTO :NEW.verificationCode FROM DUAL;
-        SELECT 'N' INTO :NEW.emailVerified FROM DUAL;
-        IF :NEW.uname IS NULL THEN
-            RAISE_APPLICATION_ERROR(-20004, 'Username is Mandatory and cannot be empty.');
-        END IF;
-        IF :NEW.pword IS NULL THEN
-            RAISE_APPLICATION_ERROR(-20005, 'Password is Mandatory and cannot be empty.');
-        END IF;
-        IF :NEW.email IS NULL THEN RAISE_APPLICATION_ERROR(-20006, 'Email is Mandatory and cannot be empty.'); END IF;
-        IF :NEW.status IS NULL THEN SELECT 'Active' INTO :NEW.status FROM DUAL; END IF;
-        IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-        IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
-    ELSIF UPDATING THEN
-        IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-        IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
+    -- Generate unique account ID for new accounts
+    :NEW.accountid := 'AER' || LPAD((1 + ABS(MOD(dbms_random.random, 100000))), 6, '000');
+    -- Generate random verification code
+    :NEW.verificationCode := dbms_random.string('X', 10);
+    -- Ensure N is selected upon inserting a new record
+    :NEW.emailVerified := 'N';
+    -- Ensure required fields are populated
+    IF :NEW.uname IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Username is Mandatory and cannot be empty.');
     END IF;
-
+    IF :NEW.pword IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Password is Mandatory and cannot be empty.');
+    END IF;
+    IF :NEW.email IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20006, 'Email is Mandatory and cannot be empty.');
+    END IF;
+    -- Default values
+    IF :NEW.status IS NULL THEN
+        :NEW.status := 'Active';
+    END IF;
+    IF :NEW.modifiedBy IS NULL THEN
+        :NEW.modifiedBy := USER;
+    END IF;
+    IF :NEW.modifiedDate IS NULL THEN
+        :NEW.modifiedDate := SYSTIMESTAMP;
+    END IF;
 EXCEPTION
     WHEN OTHERS THEN
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'account_trg for account: ' || :NEW.accountid,
+                i_faultservice => 'account_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+-- Creating Triggers
+CREATE OR REPLACE TRIGGER account_audit_trg
+    AFTER UPDATE OR DELETE
+    ON account_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO account_history_tbl(recordid, accountid, uname, pword, email, emailVerified, verificationCode,
+                                    failedLogin, lastLogin, status, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.recordid, :OLD.accountid, :OLD.uname, :OLD.pword, :OLD.email, :OLD.emailVerified,
+            :OLD.verificationCode, :OLD.failedLogin, :OLD.lastLogin, :OLD.status, :OLD.modifiedBy,
+            :OLD.modifiedDate, v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'account_audit_trg (UPDATE/DELETE): ' || :NEW.accountid,
                 o_response => v_response
         );
         RAISE;
@@ -128,13 +192,14 @@ PROMPT "Enabling Triggers"
 
 -- Enable Triggers
 ALTER TRIGGER account_trg ENABLE;
+ALTER TRIGGER account_audit_trg ENABLE;
 
 PROMPT "Creating Account Header Package"
 
 -- Create Packages
 CREATE OR REPLACE PACKAGE account_pkg
 AS
-    /* $Header: account_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Header: account_pkg. 1.0.0 15-Mar-25 11:12 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -165,6 +230,8 @@ HISTORY
 | DATE 		| Owner 	| Activity
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
+=================================================================================
+| 15-Mar-25	| eomisore 	| Introduce Account history.|
 =================================================================================
 */
     -- Create or Update Account
@@ -189,7 +256,7 @@ PROMPT "Creating Account Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY account_pkg
 AS
-    /* $Body: account_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Body: account_pkg. 1.0.0 15-Mar-25 11:12 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -220,6 +287,8 @@ HISTORY
 | DATE 		| Owner 	| Activity
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
+=================================================================================
+| 15-Mar-25	| eomisore 	| Introduce Account history.|
 =================================================================================
 */
     -- Create or Update Account
@@ -265,19 +334,20 @@ HISTORY
         i_modifiedBy IN account_tbl.modifiedBy%TYPE,
         o_response OUT VARCHAR2)
     AS
-        v_count NUMBER;
+        v_count         NUMBER;
         v_response      VARCHAR2(100);
         v_error_message VARCHAR2(4000);
     BEGIN
-        SELECT COUNT(*) INTO v_count
+        SELECT COUNT(*)
+        INTO v_count
         FROM account_tbl
         WHERE email = i_email
-          AND verificationCode = i_code;
+          AND verificationCode = i_code
+          AND emailVerified = 'N';
         IF v_count = 1 THEN
             UPDATE account_tbl
             SET emailVerified = 'Y',
-                verificationCode = NULL,
-                modifiedBy = i_modifiedBy
+                modifiedBy    = i_modifiedBy
             WHERE email = i_email;
             o_response := 'Email verified successfully';
         ELSE

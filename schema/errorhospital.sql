@@ -1,3 +1,6 @@
+PROMPT "Creating ErrorHospital Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      errorhospital.sql                                               *
  * Created:   02/03/2025, 19:01                                               *
- * Modified:  02/03/2025, 19:02                                               *
+ * Modified:  15/03/2025, 10:41                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -30,14 +33,11 @@
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Creating ErrorHospital Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
-
 PROMPT "Creating Tables"
 -- Create Tables
 CREATE TABLE ErrorHospital_tbl
 (
+    errorId      NUMBER GENERATED ALWAYS AS IDENTITY,
     errorRef     VARCHAR2(100 byte),
     errorTime    TIMESTAMP,
     errorCode    VARCHAR2(32 byte),
@@ -47,7 +47,7 @@ CREATE TABLE ErrorHospital_tbl
 
 PROMPT "Commenting Tables"
 -- Comment on tables
-
+COMMENT ON COLUMN ErrorHospital_tbl.errorId IS 'This is the unique primary identifier';
 COMMENT ON TABLE ErrorHospital_tbl IS 'Profile information for logging exceptions that occurs. An error log is a record of critical errors that are encountered by the application, operating system or server while in operation. Some of the common entries in an error log include table corruption and configuration corruption. Error logs in many cases serve as extremely useful tools for troubleshooting and managing systems, servers and even networks';
 COMMENT ON COLUMN ErrorHospital_tbl.errorRef IS 'The unique error transaction code';
 COMMENT ON COLUMN ErrorHospital_tbl.errorTime IS 'This will be time at which the exception occurs ';
@@ -57,7 +57,7 @@ COMMENT ON COLUMN ErrorHospital_tbl.errorService IS 'Name of the Service where e
 
 PROMPT "Setting Primary keys"
 -- Setting Primary Key
-ALTER TABLE ErrorHospital_tbl ADD CONSTRAINT err_pk PRIMARY KEY (errorRef);
+ALTER TABLE ErrorHospital_tbl ADD CONSTRAINT err_pk PRIMARY KEY (errorId);
 
 PROMPT "Creating triggers"
 -- Creating Triggers
@@ -80,7 +80,7 @@ PROMPT "Creating User ErrorHospital Header Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE ErrorHospital_pkg
 AS
-    /* $Header: ErrorHospital_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Header: ErrorHospital_pkg. 1.0.0 15-Mar-25 10:41 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -112,6 +112,8 @@ HISTORY
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
+| 15-Mar-25	| eomisore 	| Add error id to the GetTopErrors procedure.|
+=================================================================================
 */
     -- Log new error
     PROCEDURE ErrorCollector(
@@ -133,7 +135,7 @@ PROMPT "Creating User ErrorHospital Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY ErrorHospital_pkg
 AS
-    /* $Body: ErrorHospital_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Body: ErrorHospital_pkg. 1.0.0 15-Mar-25 10:41 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -165,6 +167,8 @@ HISTORY
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
 =================================================================================
+| 15-Mar-25	| eomisore 	| Add error id to the GetTopErrors procedure.|
+=================================================================================
 */
     -- Log new error
     PROCEDURE ErrorCollector(
@@ -189,9 +193,9 @@ HISTORY
     AS
     BEGIN
         OPEN o_errorList FOR
-            SELECT errorRef, errorTime, errorCode, errorMessage, errorService
+            SELECT errorId, errorRef, errorTime, errorCode, errorMessage, errorService
             FROM ErrorHospital_tbl
-            ORDER BY errorTime DESC
+            ORDER BY errorId DESC
                 FETCH FIRST i_records ROWS ONLY;
     EXCEPTION
         WHEN OTHERS THEN

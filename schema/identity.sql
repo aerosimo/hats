@@ -1,3 +1,6 @@
+PROMPT "Creating Identity Schema."
+SET SERVEROUTPUT ON;
+SET DEFINE OFF;
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
@@ -5,7 +8,7 @@
  * Author:    eomisore                                                        *
  * File:      identity.sql                                                    *
  * Created:   02/03/2025, 19:11                                               *
- * Modified:  02/03/2025, 19:12                                               *
+ * Modified:  15/03/2025, 15:59                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -29,10 +32,6 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.                                         *
  *                                                                            *
  ******************************************************************************/
-
-PROMPT "Creating Identity Schema."
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
 
 PROMPT "Creating Tables"
 -- Create Tables
@@ -126,67 +125,111 @@ COMMENT ON TABLE contact_tbl IS 'Profile information for list of contacts';
 PROMPT "Setting Constraints"
 
 -- Setting Foreign Key
-ALTER TABLE images_tbl ADD CONSTRAINT images_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
-ALTER TABLE person_tbl ADD CONSTRAINT person_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
-ALTER TABLE address_tbl ADD CONSTRAINT address_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
-ALTER TABLE contact_tbl ADD CONSTRAINT contact_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
+ALTER TABLE images_tbl
+    ADD CONSTRAINT images_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
+ALTER TABLE person_tbl
+    ADD CONSTRAINT person_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
+ALTER TABLE address_tbl
+    ADD CONSTRAINT address_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
+ALTER TABLE contact_tbl
+    ADD CONSTRAINT contact_fk FOREIGN KEY (accountid) REFERENCES account_tbl (accountid) ON DELETE CASCADE;
 
 -- Setting Check Constraint
-ALTER TABLE address_tbl ADD CONSTRAINT addcou_chk CHECK (country IN ('AF', 'AX', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI',
-                                                                     'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ',
-                                                                     'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ',
-                                                                     'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO',
-                                                                     'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV',
-                                                                     'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO',
-                                                                     'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU',
-                                                                     'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'EC', 'EG',
-                                                                     'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ',
-                                                                     'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE',
-                                                                     'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU',
-                                                                     'GT', 'GG', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA',
-                                                                     'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ',
-                                                                     'IE', 'IM', 'IL', 'IT', 'JM', 'JP', 'JE', 'JO',
-                                                                     'KZ', 'KE', 'KI', 'KP', 'KR', 'KW', 'KG', 'LA',
-                                                                     'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU',
-                                                                     'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT',
-                                                                     'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD',
-                                                                     'MC', 'MN', 'MS', 'MA', 'MZ', 'MM', 'NA', 'NR',
-                                                                     'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG',
-                                                                     'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS',
-                                                                     'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT',
-                                                                     'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN',
-                                                                     'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN',
-                                                                     'CS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO',
-                                                                     'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ',
-                                                                     'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TL',
-                                                                     'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC',
-                                                                     'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY',
-                                                                     'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH',
-                                                                     'YE', 'ZM', 'ZW')) ENABLE;
-ALTER TABLE person_tbl ADD CONSTRAINT pertit_chk CHECK (title IN ('Mr', 'Mrs', 'Miss', 'Dr', 'Ms', 'Professor',
-                                                                  'Reverend', 'Lady', 'Sir', 'Capt', 'Major',
-                                                                  'Hon','Judge', 'Lord', 'Dame', 'Rear Admiral',
-                                                                  'Herr', 'Monsieur', 'Vice Admiral', 'Frau',
-                                                                  'Admiral', 'Commodore', 'Alhaji', 'Alhaja',
-                                                                  'Alderman', 'Ambassador', 'Baron', 'Baroness',
-                                                                  'Brigadier', 'Cardinal', 'Chief', 'Colonel',
-                                                                  'Commander', 'Commissioner', 'Congressman',
-                                                                  'Conseiller', 'Consul', 'Corporal', 'Councillor',
-                                                                  'Countess', 'Prince', 'Princess', 'Datuk',
-                                                                  'Deacon', 'Deaconess', 'Dean', 'Eng', 'Lieutient',
-                                                                  'Officer', 'Governor', 'General', 'Her Highness',
-                                                                  'Her Majesty', 'His Highness', 'His Holiness',
-                                                                  'His Majesty', 'Justice', 'Madame', 'Mademoiselle',
-                                                                  'Master', 'Pastor', 'President', 'Rabbi', 'Senator',
-                                                                  'Sergeant', 'Sheikh', 'Sheikha', 'Sultan',
-                                                                  'Viscount', 'Viscountess')) ENABLE;
-ALTER TABLE person_tbl ADD CONSTRAINT pergen_Chk CHECK (gender IN ('Male', 'Female')) ENABLE;
-ALTER TABLE person_tbl ADD CONSTRAINT perzod_Chk CHECK (zodiac IN ('Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
-                                                                   'Virgo', 'Libra', 'Scorpio', 'Sagittarius',
-                                                                   'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
-ALTER TABLE contact_tbl ADD CONSTRAINT channel_Chk CHECK (channel IN ('Phone', 'Email', 'Fax', 'Twitter', 'Facebook',
-                                                                      'LinkedIn', 'Snapchat', 'Website')) ENABLE;
-ALTER TABLE contact_tbl ADD CONSTRAINT consent_Chk CHECK (consent IN ('YES', 'NO')) ENABLE;
+ALTER TABLE address_tbl
+    ADD CONSTRAINT addcou_chk CHECK (country IN ('AF', 'AX', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI',
+                                                 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ',
+                                                 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ',
+                                                 'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO',
+                                                 'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV',
+                                                 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO',
+                                                 'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU',
+                                                 'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'EC', 'EG',
+                                                 'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ',
+                                                 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE',
+                                                 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU',
+                                                 'GT', 'GG', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA',
+                                                 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ',
+                                                 'IE', 'IM', 'IL', 'IT', 'JM', 'JP', 'JE', 'JO',
+                                                 'KZ', 'KE', 'KI', 'KP', 'KR', 'KW', 'KG', 'LA',
+                                                 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU',
+                                                 'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT',
+                                                 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD',
+                                                 'MC', 'MN', 'MS', 'MA', 'MZ', 'MM', 'NA', 'NR',
+                                                 'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG',
+                                                 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS',
+                                                 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT',
+                                                 'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN',
+                                                 'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN',
+                                                 'CS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO',
+                                                 'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ',
+                                                 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TL',
+                                                 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC',
+                                                 'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY',
+                                                 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH',
+                                                 'YE', 'ZM', 'ZW')) ENABLE;
+ALTER TABLE person_tbl
+    ADD CONSTRAINT pertit_chk CHECK (title IN ('Mr', 'Mrs', 'Miss', 'Dr', 'Ms', 'Professor',
+                                               'Reverend', 'Lady', 'Sir', 'Capt', 'Major',
+                                               'Hon', 'Judge', 'Lord', 'Dame', 'Rear Admiral',
+                                               'Herr', 'Monsieur', 'Vice Admiral', 'Frau',
+                                               'Admiral', 'Commodore', 'Alhaji', 'Alhaja',
+                                               'Alderman', 'Ambassador', 'Baron', 'Baroness',
+                                               'Brigadier', 'Cardinal', 'Chief', 'Colonel',
+                                               'Commander', 'Commissioner', 'Congressman',
+                                               'Conseiller', 'Consul', 'Corporal', 'Councillor',
+                                               'Countess', 'Prince', 'Princess', 'Datuk',
+                                               'Deacon', 'Deaconess', 'Dean', 'Eng', 'Lieutient',
+                                               'Officer', 'Governor', 'General', 'Her Highness',
+                                               'Her Majesty', 'His Highness', 'His Holiness',
+                                               'His Majesty', 'Justice', 'Madame', 'Mademoiselle',
+                                               'Master', 'Pastor', 'President', 'Rabbi', 'Senator',
+                                               'Sergeant', 'Sheikh', 'Sheikha', 'Sultan',
+                                               'Viscount', 'Viscountess')) ENABLE;
+ALTER TABLE person_tbl
+    ADD CONSTRAINT pergen_chk CHECK (gender IN ('Male', 'Female')) ENABLE;
+ALTER TABLE person_tbl
+    ADD CONSTRAINT perzod_chk CHECK (zodiac IN ('Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
+                                                'Virgo', 'Libra', 'Scorpio', 'Sagittarius',
+                                                'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
+ALTER TABLE contact_tbl
+    ADD CONSTRAINT channel_chk CHECK (channel IN ('Phone', 'Email', 'Fax', 'Twitter', 'Facebook',
+                                                  'LinkedIn', 'Snapchat', 'Website')) ENABLE;
+ALTER TABLE contact_tbl
+    ADD CONSTRAINT consent_chk CHECK (consent IN ('YES', 'NO')) ENABLE;
+
+-- Create an account history table
+CREATE TABLE person_history_tbl AS
+SELECT *
+FROM person_tbl
+WHERE 1 = 0;
+CREATE TABLE address_history_tbl AS
+SELECT *
+FROM address_tbl
+WHERE 1 = 0;
+CREATE TABLE images_history_tbl AS
+SELECT *
+FROM images_tbl
+WHERE 1 = 0;
+CREATE TABLE contact_history_tbl AS
+SELECT *
+FROM contact_tbl
+WHERE 1 = 0;
+ALTER TABLE person_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE person_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE address_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE address_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE images_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE images_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE contact_history_tbl
+    ADD modifiedReason VARCHAR2(200);
+ALTER TABLE contact_history_tbl
+    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
 
 PROMPT "Creating Triggers"
 
@@ -199,6 +242,7 @@ DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
+    -- Get unique account ID from accounts and ensure required fields are populated
     INSERT INTO person_tbl (accountid, modifiedBy) VALUES (:NEW.accountid, 'Account Trigger');
     INSERT INTO address_tbl (accountid, modifiedBy) VALUES (:NEW.accountid, 'Account Trigger');
     INSERT INTO images_tbl (accountid, modifiedBy) VALUES (:NEW.accountid, 'Account Trigger');
@@ -218,26 +262,57 @@ END;
 /
 
 CREATE OR REPLACE TRIGGER images_trg
-    BEFORE INSERT OR UPDATE
+    BEFORE INSERT
     ON images_tbl
     FOR EACH ROW
 DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
+    -- Ensure required fields are populated
     IF :NEW.accountid IS NULL THEN
         RAISE_APPLICATION_ERROR(-20004, 'Account Identifier is Mandatory and cannot be empty.');
     END IF;
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
     IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-
 EXCEPTION
     WHEN OTHERS THEN
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'images_trg for identity: ' || :NEW.accountid,
+                i_faultservice => 'images_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER images_audit_trg
+    AFTER UPDATE OR DELETE
+    ON images_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO images_history_tbl(accountid, avatar, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.accountid, :OLD.avatar, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'images_trg (UPDATE/DELETE): ' || :NEW.accountid,
                 o_response => v_response
         );
         RAISE;
@@ -252,60 +327,119 @@ DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
-    IF :NEW.accountid IS NULL THEN
-        RAISE_APPLICATION_ERROR(-20004, 'Account Identifier is Mandatory and cannot be empty.');
-    END IF;
-    IF :NEW.birthday IS NOT NULL THEN
-        IF (:NEW.birthday > SYSDATE) THEN
-            RAISE_APPLICATION_ERROR(-20011, 'Date Of Birth Cannot Be In The Future');
-        END IF;
-        SELECT FLOOR(MONTHS_BETWEEN(SYSDATE, :NEW.birthday) / 12)
-        INTO :NEW.age
-        FROM DUAL;
-        SELECT CASE
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('21-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('19-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aries'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('20-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('20-May-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Taurus'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('21-May-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('20-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Gemini'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('21-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('22-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Cancer'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('23-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('22-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Leo'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('23-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('22-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Virgo'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('23-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('22-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Libra'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('23-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('21-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Scorpio'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('22-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('21-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Sagittarius'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('22-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('19-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Capricorn'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('20-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('18-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aquarius'
-                   WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
-                       BETWEEN TO_DATE('19-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY'))
-                       AND TO_DATE('20-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Pisces'
-                   ELSE 'Pisces'
-                   END
-        INTO :NEW.zodiac
-        FROM DUAL;
-    END IF;
     IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
+    IF INSERTING THEN
+        -- Ensure required fields are populated
+        IF :NEW.accountid IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Account Identifier is Mandatory and cannot be empty.');
+        END IF;
+        IF :NEW.birthday IS NOT NULL THEN
+            IF (:NEW.birthday > SYSDATE) THEN
+                RAISE_APPLICATION_ERROR(-20011, 'Date Of Birth Cannot Be In The Future');
+            END IF;
+            SELECT FLOOR(MONTHS_BETWEEN(SYSDATE, :NEW.birthday) / 12)
+            INTO :NEW.age
+            FROM DUAL;
+            SELECT CASE
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('19-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aries'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('20-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-May-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Taurus'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-May-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Gemini'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Cancer'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Leo'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Virgo'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Libra'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('21-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Scorpio'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('22-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('21-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Sagittarius'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('22-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('19-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Capricorn'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('20-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('18-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aquarius'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('19-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Pisces'
+                       ELSE 'Pisces'
+                       END
+            INTO :NEW.zodiac
+            FROM DUAL;
+        END IF;
+    ELSIF UPDATING THEN
+        -- Ensure required fields are populated
+        IF :NEW.accountid IS NULL AND :OLD.accountid IS NOT NULL THEN
+            SELECT :OLD.accountid INTO :NEW.accountid FROM DUAL;
+        END IF;
+        IF :NEW.gender IS NULL AND :OLD.gender IS NOT NULL THEN SELECT :OLD.gender INTO :NEW.gender FROM DUAL; END IF;
+        IF :NEW.birthday IS NOT NULL THEN
+            IF (:NEW.birthday > SYSDATE) THEN
+                RAISE_APPLICATION_ERROR(-20011, 'Date Of Birth Cannot Be In The Future');
+            END IF;
+            SELECT FLOOR(MONTHS_BETWEEN(SYSDATE, :NEW.birthday) / 12)
+            INTO :NEW.age
+            FROM DUAL;
+            SELECT CASE
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('19-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aries'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('20-Apr-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-May-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Taurus'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-May-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Gemini'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('21-Jun-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Cancer'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Jul-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Leo'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Aug-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Virgo'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Sep-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('22-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Libra'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('23-Oct-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('21-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Scorpio'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('22-Nov-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('21-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Sagittarius'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('22-Dec-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('19-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Capricorn'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('20-Jan-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('18-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Aquarius'
+                       WHEN TO_DATE(TO_CHAR(:NEW.birthday, 'DD-Mon-YYYY'))
+                           BETWEEN TO_DATE('19-Feb-' || TO_CHAR(:NEW.birthday, 'YYYY'))
+                           AND TO_DATE('20-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Pisces'
+                       ELSE 'Pisces'
+                       END
+            INTO :NEW.zodiac
+            FROM DUAL;
+        END IF;
+    END IF;
+
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -313,7 +447,41 @@ EXCEPTION
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'person_trg for identity: ' || :NEW.accountid,
+                i_faultservice => 'person_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER person_audit_trg
+    AFTER UPDATE OR DELETE
+    ON person_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO person_history_tbl(accountid, title, firstName, middleName, lastName, zodiac, gender, birthday, age,
+                                   modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.accountid, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiac,
+            :OLD.gender, :OLD.birthday, :OLD.age, :OLD.modifiedBy, :OLD.modifiedDate,
+            v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'person_trg (UPDATE/DELETE): ' || :NEW.accountid,
                 o_response => v_response
         );
         RAISE;
@@ -321,26 +489,59 @@ END;
 /
 
 CREATE OR REPLACE TRIGGER address_trg
-    BEFORE INSERT OR UPDATE
+    BEFORE INSERT
     ON address_tbl
     FOR EACH ROW
 DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
+    -- Ensure required fields are populated
     IF :NEW.accountid IS NULL THEN
         RAISE_APPLICATION_ERROR(-20004, 'Account Identifier is Mandatory and cannot be empty.');
     END IF;
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
     IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-
 EXCEPTION
     WHEN OTHERS THEN
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'address_trg for identity: ' || :NEW.accountid,
+                i_faultservice => 'address_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER address_audit_trg
+    AFTER UPDATE OR DELETE
+    ON address_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO address_history_tbl(accountid, firstline, secondline, thirdline, city, postcode, country, modifiedBy,
+                                    modifiedDate, modifiedReason)
+    VALUES (:OLD.accountid, :OLD.firstline, :OLD.secondline, :OLD.thirdline, :OLD.city, :OLD.postcode, :OLD.country,
+            :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'address_trg (UPDATE/DELETE): ' || :NEW.accountid,
                 o_response => v_response
         );
         RAISE;
@@ -348,26 +549,58 @@ END;
 /
 
 CREATE OR REPLACE TRIGGER contact_trg
-    BEFORE INSERT OR UPDATE
+    BEFORE INSERT
     ON contact_tbl
     FOR EACH ROW
 DECLARE
     v_error_message VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
+    -- Ensure required fields are populated
     IF :NEW.accountid IS NULL THEN
         RAISE_APPLICATION_ERROR(-20004, 'Account Identifier is Mandatory and cannot be empty.');
     END IF;
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
     IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-
 EXCEPTION
     WHEN OTHERS THEN
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'contact_trg for identity: ' || :NEW.accountid,
+                i_faultservice => 'contact_trg (INSERT): ' || :NEW.accountid,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER contact_audit_trg
+    AFTER UPDATE OR DELETE
+    ON contact_tbl
+    FOR EACH ROW
+DECLARE
+    v_error_message   VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modified_reason VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF UPDATING THEN
+        v_modified_reason := 'Updated';
+    ELSIF DELETING THEN
+        v_modified_reason := 'Deleted';
+    END IF;
+    -- Log the update or delete in the history table
+    INSERT INTO contact_history_tbl(accountid, channel, address, consent, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.accountid, :OLD.channel, :OLD.address, :OLD.consent, :OLD.modifiedBy, :OLD.modifiedDate,
+            v_modified_reason);
+EXCEPTION
+    WHEN OTHERS THEN
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'contact_trg (UPDATE/DELETE): ' || :NEW.accountid,
                 o_response => v_response
         );
         RAISE;
@@ -379,16 +612,21 @@ PROMPT "Enabling Triggers"
 -- Enable Triggers
 ALTER TRIGGER syncaccount_trg ENABLE;
 ALTER TRIGGER person_trg ENABLE;
+ALTER TRIGGER person_audit_trg ENABLE;
 ALTER TRIGGER address_trg ENABLE;
+ALTER TRIGGER address_audit_trg ENABLE;
 ALTER TRIGGER contact_trg ENABLE;
+ALTER TRIGGER contact_audit_trg ENABLE;
 ALTER TRIGGER images_trg ENABLE;
+ALTER TRIGGER images_audit_trg ENABLE;
+
 
 PROMPT "Creating Identity Header Package"
 
 -- Create Packages
 CREATE OR REPLACE PACKAGE identity_pkg
 AS
-    /* $Header: identity_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Header: identity_pkg. 1.0.0 15-Mar-25 15:59 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -419,6 +657,8 @@ HISTORY
 | DATE 		| Owner 	| Activity
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
+=================================================================================
+| 15-Mar-25	| eomisore 	| Add history log to tables.|
 =================================================================================
 */
     -- Create or Update Identity
@@ -466,7 +706,7 @@ PROMPT "Creating Identity Body Package"
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY identity_pkg
 AS
-    /* $Body: identity_pkg. 1.0.0 02-Mar-25 19:02 Package
+    /* $Body: identity_pkg. 1.0.0 15-Mar-25 15:59 Package
 =================================================================================
   Copyright (c) 2025 Aerosimo
 
@@ -497,6 +737,8 @@ HISTORY
 | DATE 		| Owner 	| Activity
 =================================================================================
 | 02-Mar-25	| eomisore 	| Created initial script.|
+=================================================================================
+| 15-Mar-25	| eomisore 	| Add history log to tables.|
 =================================================================================
 */
     -- Create or Update Identity
