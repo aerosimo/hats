@@ -42,4 +42,3 @@ SET DEFINE OFF;
 @schema/account.sql
 @schema/identity.sql
 @schema/profile.sql
-@schema/authentication.sql

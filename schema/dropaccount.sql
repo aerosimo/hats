@@ -34,6 +34,7 @@ SET DEFINE OFF;
  ******************************************************************************/
 
 PROMPT "Dropping Account Tables"
+DROP TABLE usertoken_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE account_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE account_tbl CASCADE CONSTRAINTS purge;
 

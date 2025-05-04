@@ -38,7 +38,6 @@ SET DEFINE OFF;
 --  Connect to HATS and run the following --
 --------------------------------------------
 
-@schema/dropauthentication.sql
 @schema/dropprofile.sql
 @schema/dropidentity.sql
 @schema/dropaccount.sql

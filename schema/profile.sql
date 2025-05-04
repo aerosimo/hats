@@ -402,6 +402,19 @@ HISTORY
         i_countrycode IN country_tbl.alpha2%TYPE,
         o_countryList OUT SYS_REFCURSOR);
 
+    -- Update constellation table
+    PROCEDURE SaveHoroscope(
+        i_zodiac IN horoscope_tbl.zodiac%TYPE,
+        i_currentDay IN horoscope_tbl.currentDay%TYPE,
+        i_narrative IN horoscope_tbl.narrative%TYPE,
+        i_modifiedBy IN horoscope_tbl.modifiedBy%TYPE,
+        o_response OUT VARCHAR2);
+
+    -- Find details from the constellation table
+    PROCEDURE GetHoroscope(
+        i_zodiac IN horoscope_tbl.zodiac%TYPE,
+        o_astrologyList OUT SYS_REFCURSOR);
+
 END profile_pkg;
 /
 
@@ -490,7 +503,7 @@ HISTORY
         ErrorHospital_pkg.ErrorCollector(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'account_pkg.SaveProfile: ' || i_accountid,
+                i_faultservice => 'profile_pkg.SaveProfile: ' || i_accountid,
                 o_response => v_response
         );
         o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
@@ -507,6 +520,53 @@ HISTORY
             WHERE alpha2 = i_countrycode;
     END GetCountry;
 
+    -- Update constellation table
+    PROCEDURE SaveHoroscope(
+        i_zodiac IN horoscope_tbl.zodiac%TYPE,
+        i_currentDay IN horoscope_tbl.currentDay%TYPE,
+        i_narrative IN horoscope_tbl.narrative%TYPE,
+        i_modifiedBy IN horoscope_tbl.modifiedBy%TYPE,
+        o_response OUT VARCHAR2)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE horoscope_tbl
+        SET zodiac     = i_zodiac,
+            currentDay = i_currentDay,
+            narrative  = i_narrative,
+            modifiedBy = i_modifiedBy
+        WHERE zodiac = i_zodiac;
+        o_response := 'Success';
+        IF SQL%NOTFOUND THEN
+            INSERT INTO horoscope_tbl(zodiac, currentDay, narrative, modifiedBy)
+            VALUES (i_zodiac, i_currentDay, i_narrative, i_modifiedBy);
+            o_response := 'Success';
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN ROLLBACK;
+        v_error_message := SUBSTR(SQLERRM, 1, 4000);
+        ErrorHospital_pkg.ErrorCollector(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_error_message,
+                i_faultservice => 'profile_pkg.SaveHoroscope: ' || i_zodiac,
+                o_response => v_response
+        );
+        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
+    END SaveHoroscope;
+
+    -- Find details from the constellation table
+    PROCEDURE GetHoroscope(
+        i_zodiac IN horoscope_tbl.zodiac%TYPE,
+        o_astrologyList OUT SYS_REFCURSOR)
+    AS
+    BEGIN
+        OPEN o_astrologyList FOR
+            SELECT *
+            FROM horoscope_tbl
+            WHERE zodiac = i_zodiac;
+    END GetHoroscope;
+
 END profile_pkg;
 /
 
@@ -521,41 +581,41 @@ PROMPT "Inserting Initial Records"
 -- Insert initial records
 
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Aries', 'Mar 29, 2025',
-        'Unexpected visitors could wake you up to the possibility of new work opportunities, Aries. This could advance your current job or be work you can do on your own - maybe on a volunteer basis. Whatever it is, you will probably find it exciting. You might even be impatient to get on with it. Pace yourself. If you tire yourself out, you would not be able to continue.');
+VALUES ('Aries', 'May 3, 2025',
+        'Innovative art forms might seem especially appealing today, Aries. Stay out of gallery shops unless you''re prepared to take home a carload of merchandise. If you''re more into music, you might break the bank downloading tunes to your MP3 player. This could be a new phase in your artistic tastes or it could be a longstanding trend. Whichever it is, have fun!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Taurus', 'Mar 29, 2025',
-        'If you aren''t romantically involved, an errand, walk, or other foray into your neighborhood might bring an exciting new person into your life. This encounter may or may not lead to something lasting, Taurus, but you will enjoy it anyway! If you''re currently involved, a casual outing with your partner could result in intimate conversations that bring the two of you closer.');
+VALUES ('Taurus', 'May 3, 2025',
+        'Do you believe in ghosts? Some strange phone calls, emails, or other communications may come your way today, Taurus. One may come from someone who thinks you''re someone else. Phone calls may be hang-ups, wrong numbers, or phantom rings. If there''s a knock at the door, it may be the house settling and not a ghost, but it can still be rather unnerving. Try not to think about it.');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Gemini', 'Mar 29, 2025',
-        'Money that you may have been hoping to use to better your living or working condition could suddenly come your way today, Gemini. Ideas for how to put it to work in the most efficient, satisfying way could pop into your mind quickly. You will probably want to write them all down, consider your options carefully, and then choose the ones that suit your needs best. Go to it.');
+VALUES ('Gemini', 'May 3, 2025',
+        'An unexpected sum of money could come your way today, Gemini. It probably won''t be large, but it will be welcome nonetheless. Perhaps someone has owed you money for a long time and finally repays it. Or you might sell an item you''ve wanted to unload for a long time. Whatever it is, you might want to take a friend to dinner. Go for it and have fun!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Cancer', 'Mar 29, 2025',
-        'When you run errands today, check the bulletin boards in local businesses. You may have been longing for adventure and dreaming about getting away from it all, Cancer, but today you might find the excitement you crave right in your community. New events, people, and businesses that you will enjoy could be moving in. You might also discover a group that shares one of your interests.');
+VALUES ('Cancer', 'May 3, 2025',
+        'Have you been exercising too rigorously lately, Cancer? If so, you might feel some little aches and pains. Stay off your feet for most of the day. When you exercise, concentrate on stretching. Spend some time soaking in a hot tub if you can. The old saying, "No pain, no gain" has pretty much been discredited! Yoga or tai chi could serve you as well as aerobics today. Stick with those!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Leo', 'Mar 29, 2025',
-        'Information received today excites your imagination and encourages you to start a new artistic or creative project, Leo. Stories, pictures, abstract concepts - all could come together in your mind and form an inspired idea that could change your life. Gird your loins, write down your thoughts, and see where it all takes you. You might be surprised by what you produce!');
+VALUES ('Leo', 'May 3, 2025',
+        'The feeling that someone is coming to visit you might be with you throughout the day, Leo. Your intuition is probably right, except for one thing - it''s probably more than one person! Some friends may have some good news that they want to share as soon as possible. Straighten up the house and pretend to be surprised when they come to the door. Have a great evening!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Virgo', 'Mar 29, 2025',
-        'Adventure is the word for today, Virgo. A lot of physical and mental energy, as well as enthusiasm, might lead you to aim for goals that others consider too risky or unrealistic. Don''t let their opinions stop you. After giving each idea an objective assessment, if you still believe you want to try, start looking into it seriously. People have probably made stranger dreams than this come true!');
+VALUES ('Virgo', 'May 3, 2025',
+        'Are all of your friends into astrology, divine science, or spiritual matters, Virgo? It might seem like most of them are today, anyway. You may have many new friends in those fields. You have a lot to learn from all of them, and even more that you can learn together. A giant spurt of personal growth is right around the corner.');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Libra', 'Mar 29, 2025',
-        'New career goals may come your way with the current aspect, Libra, opening up possibilities you may not have considered. This could be very exciting. It might even work toward the fulfillment of childhood dreams that you abandoned long ago. They may involve the arts, modern technology, or both. The only downside is that you might work too hard and get exhausted. Pace yourself.');
+VALUES ('Libra', 'May 3, 2025',
+        'A love partner may host a social event or meeting of some kind, Libra. It might be interesting to get acquainted with friends of your mate you haven''t yet met. Some of them are probably intelligent, interesting people in fascinating professions. One of them could recommend a few books that you will definitely want to read. Have fun. Don''t forget to thank your sweetheart!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Scorpio', 'Mar 29, 2025',
-        'Fascinating new information could arrive today from TV or the Internet, opening up new educational opportunities. The possibility of making contact and perhaps visiting new friends in other countries might come to your attention. You will probably find this very exciting, Scorpio, and make plans immediately. This is fine, but be careful to consider all contingencies. Be practical and objective.');
+VALUES ('Scorpio', 'May 3, 2025',
+        'Are you contemplating a trip, Scorpio, perhaps to a place you''ve always dreamed of visiting? If you''re in doubt as to whether or not you can do it, work out your budget and you might be surprised. Invite a friend or romantic partner to accompany you. Such a trip could boost your personal growth like nothing you''ve ever tried before. Think about it!');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Sagittarius', 'Mar 29, 2025',
-        'A sudden burst of physical energy and determination could lead to additional income for you, Sagittarius. This is probably due to an unexpected opportunity to do some extra work outside the scope of your usual employment. It could also be a long overdue payment for past work. You could also receive acknowledgement of some kind for work well done, further firing your enthusiasm. Go for the gold!');
+VALUES ('Sagittarius', 'May 3, 2025',
+        'Material values may pale beside spiritual ones today, Sagittarius. You might consider giving up the rat race and retreating to the wilderness. This would perhaps make a good vacation, but you probably aren''t ready to chuck it all just yet. Don''t be too hard on yourself if your enjoyment of worldly pleasures returns tomorrow. Changes like this come gradually, not overnight. Take it at your own pace.');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Capricorn', 'Mar 29, 2025',
-        'Friends or a group with which you''re affiliated could propose a trip. This might seem like a great adventure, Capricorn, so you''re likely to go for it. You will probably have a wonderful time. You might make some new friends while you''re away, or even fall in love. A little break might fire your enthusiasm for pursuing career or educational opportunities when you return. Go for it!');
+VALUES ('Capricorn', 'May 3, 2025',
+        'A current or potential romantic partner might seem like the most perfect, wonderful person in the world to you, Capricorn. Your romantic nature could get the better of you today. Don''t gaze at your partner all dewy eyed! Instead, try to maintain a certain distance to avoid appearing too needy. It was probably your self-sufficiency and inner power that attracted your lover in the first place.');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Aquarius', 'Mar 29, 2025',
-        'An opportunity to do some extra work outside the scope of your regular job could present itself to you. Take it, Aquarius. Not only could you earn some extra money but you might also open new doors that expand your professional horizons. The only danger is that you might work too hard and tire yourself out. It''s OK for a while, but don''t make a habit of it. You need to conserve your strength.');
+VALUES ('Aquarius', 'May 3, 2025',
+        'You might not be able to concentrate on your work today, Aquarius. Your head may be in the clouds and your eye for detail could fail you somewhat. Needless to say, this isn''t a good day to tackle new, difficult, or complicated tasks. Concentrate on routines that you can do without thinking. That way you will get through the day without making yourself crazy.');
 INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
-VALUES ('Pisces', 'Mar 29, 2025',
-        'You might be extremely busy now. Invitations to large parties, small gatherings with close friends, and intimate evenings with romantic partners might come up today. Be discriminating in those you accept, Pisces. Concentrate on seeing people who share your interests. This may bring new friends your way, as well as opportunities to expand your horizons. Romance looks great now.');
+VALUES ('Pisces', 'May 3, 2025',
+        'Are you an artist, writer, or musician, Pisces? If so, your work may take on a more symbolic or impressionistic tone. Today you''re probably more interested in conveying feelings and impressions than details. It might surprise you that you''re thinking along those lines. This urge may vanish tomorrow, so if you like today''s work, make the most of it. Try to remember how and why you''re doing it!');
 
 INSERT INTO country_tbl (alpha2, alpha3, country, region, continent, dialPrefix, currencyCode, currencyName)
 VALUES ('AF', 'AFG', 'Afghanistan', 'South-Central Asia', 'Asia', '+93', 'AFN', 'Afghan Afghani');
