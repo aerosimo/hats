@@ -53,7 +53,7 @@ CREATE TABLE person_tbl
     firstName    VARCHAR2(100 BYTE),
     middleName   VARCHAR2(100 BYTE),
     lastName     VARCHAR2(100 BYTE),
-    zodiac       VARCHAR2(30 BYTE),
+    zodiacSign   VARCHAR2(30 BYTE),
     gender       VARCHAR2(30 BYTE),
     birthday     DATE,
     age          VARCHAR2(10 BYTE),
@@ -101,7 +101,7 @@ CREATE TABLE country_tbl
 
 CREATE TABLE profile_tbl
 (
-    email         VARCHAR2(20 BYTE),
+    email         VARCHAR2(200 BYTE),
     maritalStatus VARCHAR2(50 BYTE),
     height        VARCHAR2(20 BYTE),
     weight        VARCHAR2(20 BYTE),
@@ -117,7 +117,7 @@ CREATE TABLE profile_tbl
 
 CREATE TABLE horoscope_tbl
 (
-    zodiac       VARCHAR2(20 BYTE),
+    zodiacSign   VARCHAR2(20 BYTE),
     currentDay   VARCHAR2(50 BYTE),
     narrative    VARCHAR2(4000 BYTE),
     modifiedBy   VARCHAR2(50 BYTE),
@@ -133,7 +133,7 @@ PROMPT "Setting Constraints"
 ALTER TABLE country_tbl
     ADD CONSTRAINT alpha_unq UNIQUE (alpha2);
 ALTER TABLE horoscope_tbl
-    ADD CONSTRAINT zodiac_unq UNIQUE (zodiac);
+    ADD CONSTRAINT zodiacSign_unq UNIQUE (zodiacSign);
 ALTER TABLE profile_tbl
     ADD CONSTRAINT profile_unq UNIQUE (email);
 
@@ -151,7 +151,7 @@ ALTER TABLE contact_tbl
 ALTER TABLE profile_tbl
         ADD CONSTRAINT profile_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
 ALTER TABLE person_tbl
-        ADD CONSTRAINT person_zodiac_fk FOREIGN KEY (zodiac) REFERENCES horoscope_tbl (zodiac);
+        ADD CONSTRAINT person_zodiacSign_fk FOREIGN KEY (zodiacSign) REFERENCES horoscope_tbl (zodiacSign);
 
 -- Setting Check Constraint
 ALTER TABLE address_tbl
@@ -250,7 +250,7 @@ ALTER TABLE profile_tbl
                                                       'Any other Black background',
                                                       'Any other ethnic group')) ENABLE;
 ALTER TABLE horoscope_tbl
-    ADD CONSTRAINT zodiac_chk CHECK (zodiac IN ('Aries', 'Taurus', 'Gemini',
+    ADD CONSTRAINT zodiacSign_chk CHECK (zodiacSign IN ('Aries', 'Taurus', 'Gemini',
                                                 'Cancer', 'Leo', 'Virgo',
                                                 'Libra', 'Scorpio', 'Sagittarius',
                                                 'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
@@ -322,7 +322,7 @@ COMMENT ON COLUMN person_tbl.lastName IS 'This is contact''s last name.';
 COMMENT ON COLUMN person_tbl.gender IS 'This is contact''s Gender.';
 COMMENT ON COLUMN person_tbl.birthday IS 'This is contact''s date of birth.';
 COMMENT ON COLUMN person_tbl.age IS 'This is contact''s Age.';
-COMMENT ON COLUMN person_tbl.zodiac IS 'The Zodiac is an area of the sky that extends approximately 8° north or south of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
+COMMENT ON COLUMN person_tbl.zodiacSign IS 'The zodiacSign is an area of the sky that extends approximately 8° north or south of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
 COMMENT ON COLUMN person_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN person_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE person_tbl IS 'Profile information for a person.';
@@ -373,9 +373,9 @@ COMMENT ON COLUMN profile_tbl.modifiedDate IS 'Audit column - date of last updat
 COMMENT ON TABLE profile_tbl IS 'Profile information for a Contact.';
 
 COMMENT ON TABLE horoscope_tbl IS 'Profile information for list of daily horoscope based on signs.';
-COMMENT ON COLUMN horoscope_tbl.zodiac IS 'The zodiac is an area of the sky that extends approximately 8° north or south (as measured in celestial latitude) of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
+COMMENT ON COLUMN horoscope_tbl.zodiacSign IS 'The zodiacSign is an area of the sky that extends approximately 8° north or south (as measured in celestial latitude) of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
 COMMENT ON COLUMN horoscope_tbl.currentDay IS 'The current date means the date today or the date when something will happen.';
-COMMENT ON COLUMN horoscope_tbl.narrative IS 'Your Zodiac sign, or star sign, reflects the position of the sun when you were born. With its strong influence on your personality, character, and emotions, your sign is a powerful tool for understanding yourself and your relationships and of course, your sign can show you the way to an incredible life.';
+COMMENT ON COLUMN horoscope_tbl.narrative IS 'Your zodiacSign sign, or star sign, reflects the position of the sun when you were born. With its strong influence on your personality, character, and emotions, your sign is a powerful tool for understanding yourself and your relationships and of course, your sign can show you the way to an incredible life.';
 COMMENT ON COLUMN horoscope_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN horoscope_tbl.modifiedDate IS 'Audit column - date of last update.';
 
@@ -496,7 +496,7 @@ BEGIN
                            AND TO_DATE('20-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Pisces'
                        ELSE 'Pisces'
                        END
-            INTO :NEW.zodiac
+            INTO :NEW.zodiacSign
             FROM DUAL;
         END IF;
     ELSIF UPDATING THEN
@@ -548,7 +548,7 @@ BEGIN
                            AND TO_DATE('20-Mar-' || TO_CHAR(:NEW.birthday, 'YYYY')) THEN 'Pisces'
                        ELSE 'Pisces'
                        END
-            INTO :NEW.zodiac
+            INTO :NEW.zodiacSign
             FROM DUAL;
         END IF;
     END IF;
@@ -581,9 +581,9 @@ BEGIN
         v_modified_reason := 'Deleted';
     END IF;
     -- Log the update or delete in the history table
-    INSERT INTO person_history_tbl(email, title, firstName, middleName, lastName, zodiac, gender, birthday, age,
+    INSERT INTO person_history_tbl(email, title, firstName, middleName, lastName, zodiacSign, gender, birthday, age,
                                    modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiac,
+    VALUES (:OLD.email, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiacSign,
             :OLD.gender, :OLD.birthday, :OLD.age, :OLD.modifiedBy, :OLD.modifiedDate,
             v_modified_reason);
 EXCEPTION
@@ -786,7 +786,7 @@ EXCEPTION
         error_vault_pkg.store_error(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'horoscope_trg for profile: ' || :NEW.zodiac,
+                i_faultservice => 'horoscope_trg for profile: ' || :NEW.zodiacSign,
                 o_response => v_response
         );
         RAISE;
@@ -809,15 +809,15 @@ BEGIN
         v_modified_reason := 'Deleted';
     END IF;
     -- Log the update or delete in the history table
-    INSERT INTO horoscope_history_tbl(zodiac, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.zodiac, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
+    INSERT INTO horoscope_history_tbl(zodiacSign, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
+    VALUES (:OLD.zodiacSign, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
         v_error_message := SUBSTR(SQLERRM, 1, 4000);
         error_vault_pkg.store_error(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'horoscope_trg (INSERT): ' || :NEW.zodiac,
+                i_faultservice => 'horoscope_trg (INSERT): ' || :NEW.zodiacSign,
                 o_response => v_response
         );
         RAISE;
@@ -957,22 +957,58 @@ AS
         i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
 
-    PROCEDURE GetCountry(
-        i_countrycode IN VARCHAR2,
-        o_countryList OUT SYS_REFCURSOR);
-
     -- Update constellation table
     PROCEDURE SaveHoroscope(
-        i_zodiac IN VARCHAR2,
+        i_zodiacSign IN VARCHAR2,
         i_currentDay IN VARCHAR2,
         i_narrative IN VARCHAR2,
         i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
 
+    -- Find details from the country table
+    PROCEDURE GetCountry(
+        i_countrycode IN VARCHAR2,
+        o_countryList OUT SYS_REFCURSOR);
+
     -- Find details from the constellation table
     PROCEDURE GetHoroscope(
-        i_zodiac IN VARCHAR2,
+        i_email IN VARCHAR2,
         o_astrologyList OUT SYS_REFCURSOR);
+
+    -- Find details from the image table
+    PROCEDURE GetImage(
+        i_email IN VARCHAR2,
+        o_avatarList OUT SYS_REFCURSOR);
+
+    -- Find details from the person table
+    PROCEDURE GetPerson(
+        i_email IN VARCHAR2,
+        o_personList OUT SYS_REFCURSOR);
+
+    -- Find details from the address table
+    PROCEDURE GetAddress(
+        i_email IN VARCHAR2,
+        o_addressList OUT SYS_REFCURSOR);
+
+    -- Find details from the contact table
+    PROCEDURE GetContact(
+        i_email IN VARCHAR2,
+        o_contactList OUT SYS_REFCURSOR);
+
+    -- Find details from the contact table
+    PROCEDURE GetProfile(
+        i_email IN VARCHAR2,
+        o_profileList OUT SYS_REFCURSOR);
+
+    -- Find details user details
+    PROCEDURE GetSilhouette (
+        i_email           IN  VARCHAR2,
+        o_personList      OUT SYS_REFCURSOR,
+        o_avatarList      OUT SYS_REFCURSOR,
+        o_addressList     OUT SYS_REFCURSOR,
+        o_contactList     OUT SYS_REFCURSOR,
+        o_profileList     OUT SYS_REFCURSOR,
+        o_astrologyList   OUT SYS_REFCURSOR);
 
 END profile_pkg;
 /
@@ -1221,20 +1257,9 @@ AS
         o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
     END SaveProfile;
 
-    PROCEDURE GetCountry(
-        i_countrycode IN VARCHAR2,
-        o_countryList OUT SYS_REFCURSOR)
-    AS
-    BEGIN
-        OPEN o_countryList FOR
-            SELECT *
-            FROM country_tbl
-            WHERE alpha2 = i_countrycode;
-    END GetCountry;
-
     -- Update constellation table
     PROCEDURE SaveHoroscope(
-        i_zodiac IN VARCHAR2,
+        i_zodiacSign IN VARCHAR2,
         i_currentDay IN VARCHAR2,
         i_narrative IN VARCHAR2,
         i_modifiedBy IN VARCHAR2,
@@ -1244,15 +1269,15 @@ AS
         v_response      VARCHAR2(100);
     BEGIN
         UPDATE horoscope_tbl
-        SET zodiac     = i_zodiac,
+        SET zodiacSign     = i_zodiacSign,
             currentDay = i_currentDay,
             narrative  = i_narrative,
             modifiedBy = i_modifiedBy
-        WHERE zodiac = i_zodiac;
+        WHERE zodiacSign = i_zodiacSign;
         o_response := 'Success';
         IF SQL%NOTFOUND THEN
-            INSERT INTO horoscope_tbl(zodiac, currentDay, narrative, modifiedBy)
-            VALUES (i_zodiac, i_currentDay, i_narrative, i_modifiedBy);
+            INSERT INTO horoscope_tbl(zodiacSign, currentDay, narrative, modifiedBy)
+            VALUES (i_zodiacSign, i_currentDay, i_narrative, i_modifiedBy);
             o_response := 'Success';
         END IF;
     EXCEPTION
@@ -1261,36 +1286,218 @@ AS
         error_vault_pkg.store_error(
                 i_faultcode => SQLCODE,
                 i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE HOROSCOPE): ' || i_zodiac,
+                i_faultservice => 'profile_pkg (SAVE HOROSCOPE): ' || i_zodiacSign,
                 o_response => v_response
         );
         o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
     END SaveHoroscope;
 
-    -- Find details from the constellation table
-    PROCEDURE GetHoroscope(
-        i_zodiac IN VARCHAR2,
-        o_astrologyList OUT SYS_REFCURSOR)
+    -- Find details from the country table
+    PROCEDURE GetCountry(
+        i_countrycode IN VARCHAR2,
+        o_countryList OUT SYS_REFCURSOR)
     AS
         v_error_message VARCHAR2(4000);
         v_response      VARCHAR2(100);
     BEGIN
+        OPEN o_countryList FOR
+            SELECT *
+            FROM country_tbl
+            WHERE alpha2 = i_countrycode;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETCOUNTRY): ',
+                    o_response => v_response
+            );
+    END GetCountry;
+
+    -- Find details from the constellation table
+    PROCEDURE GetHoroscope(
+        i_email IN VARCHAR2,
+        o_astrologyList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+        v_zodiacSign    VARCHAR2(100);
+    BEGIN
+        SELECT zodiacSign INTO v_zodiacSign
+                          FROM person_tbl
+                          WHERE email = i_email;
         OPEN o_astrologyList FOR
             SELECT *
             FROM horoscope_tbl
-            WHERE zodiac = i_zodiac;
+            WHERE zodiacSign = v_zodiacSign;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-        i_faultcode => SQLCODE,
-        i_faultmessage => v_error_message,
-        i_faultservice => 'profile_pkg (GETHOROSCOPE): ' || i_zodiac,
-        o_response => v_response
-        );
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETHOROSCOPE): ' || i_email,
+                    o_response => v_response
+            );
 
     END GetHoroscope;
 
+    -- Find details from the image table
+    PROCEDURE GetImage(
+        i_email IN VARCHAR2,
+        o_avatarList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+        BEGIN
+            OPEN o_avatarList FOR
+                SELECT *
+                FROM images_tbl
+                WHERE email = i_email;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                v_error_message := SUBSTR(SQLERRM, 1, 4000);
+                error_vault_pkg.store_error(
+                        i_faultcode => SQLCODE,
+                        i_faultmessage => v_error_message,
+                        i_faultservice => 'profile_pkg (GETIMAGE): ' || i_email,
+                        o_response => v_response
+                );
+    END GetImage;
+
+    -- Find details from the person table
+    PROCEDURE GetPerson(
+        i_email IN VARCHAR2,
+        o_personList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_personList FOR
+            SELECT *
+            FROM person_tbl
+            WHERE email = i_email;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETPERSON): ' || i_email,
+                    o_response => v_response
+            );
+    END GetPerson;
+
+    -- Find details from the address table
+    PROCEDURE GetAddress(
+        i_email IN VARCHAR2,
+        o_addressList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_addressList FOR
+            SELECT *
+            FROM address_tbl
+            WHERE email = i_email;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETADDRESS): ' || i_email,
+                    o_response => v_response
+            );
+    END GetAddress;
+
+    -- Find details from the contact table
+    PROCEDURE GetContact(
+        i_email IN VARCHAR2,
+        o_contactList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_contactList FOR
+            SELECT *
+            FROM contact_tbl
+            WHERE email = i_email;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETCONTACT): ' || i_email,
+                    o_response => v_response
+            );
+    END GetContact;
+
+    -- Find details from the contact table
+    PROCEDURE GetProfile(
+        i_email IN VARCHAR2,
+        o_profileList OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_profileList FOR
+            SELECT *
+            FROM profile_tbl
+            WHERE email = i_email;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'profile_pkg (GETPROFILE): ' || i_email,
+                    o_response => v_response
+            );
+    END GetProfile;
+
+    -- Find details user details
+    PROCEDURE GetSilhouette (
+        i_email           IN  VARCHAR2,
+        o_personList      OUT SYS_REFCURSOR,
+        o_avatarList      OUT SYS_REFCURSOR,
+        o_addressList     OUT SYS_REFCURSOR,
+        o_contactList     OUT SYS_REFCURSOR,
+        o_profileList     OUT SYS_REFCURSOR,
+        o_astrologyList   OUT SYS_REFCURSOR)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+        v_zodiacSign    VARCHAR2(100);
+    BEGIN
+        -- Person
+        OPEN o_personList FOR SELECT * FROM person_tbl WHERE email = i_email;
+        -- Avatar
+        OPEN o_avatarList FOR SELECT * FROM images_tbl WHERE email = i_email;
+        -- Address
+        OPEN o_addressList FOR SELECT * FROM address_tbl WHERE email = i_email;
+        -- Contact (multiple rows possible)
+        OPEN o_contactList FOR SELECT * FROM contact_tbl WHERE email = i_email;
+        -- Profile
+        OPEN o_profileList FOR SELECT * FROM profile_tbl WHERE email = i_email;
+        -- Horoscope (first find zodiac sign)
+        SELECT zodiacSign INTO v_zodiacSign FROM person_tbl WHERE email = i_email;
+        OPEN o_astrologyList FOR SELECT * FROM horoscope_tbl WHERE zodiacSign = v_zodiacSign;
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            NULL;
+        WHEN OTHERS THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode   => SQLCODE,
+                    i_faultmessage=> v_error_message,
+                    i_faultservice=> 'profile_pkg (GETSILHOUETTE): ' || i_email,
+                    o_response    => v_response
+            );
+    END GetSilhouette;
 END profile_pkg;
 /
 
@@ -1304,40 +1511,40 @@ PROMPT "Inserting Initial Records"
 
 -- Insert initial records
 
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Aries', 'Sep 17, 2025',
-        'Do nott spread the good news too quickly, Aries. As exciting as it is, nothing is confirmed yet. Keep the information under your hat until plane reservations have been made or you have the job offer in writing. Whatever the good news is, it is exactly what the doctor prescribed to give your self-confidence a boost.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+        'Do not spread the good news too quickly, Aries. As exciting as it is, nothing is confirmed yet. Keep the information under your hat until plane reservations have been made or you have the job offer in writing. Whatever the good news is, it is exactly what the doctor prescribed to give your self-confidence a boost.');
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Taurus', 'Sep 17, 2025',
         'If you receive a financial windfall, spend it wisely, Taurus. Your tendency might be to buy gifts or treat a crowd to a lavish night on the town. But where is the enduring value? Invested carefully, a small chunk of money can grow into a much larger one, which will give you many more options. Be prudent.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Gemini', 'Sep 17, 2025',
         'You are energetic and enthusiastic today, Gemini, and those around you respond favorably. It seems everyone wants to be in your orbit. Work at home and the office goes quickly and smoothly. Because you have so much energy, why not take on a new project? Normally this would send you over the edge, but today you feel you could take on anything. Go for it.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Cancer', 'Sep 17, 2025',
         'There is tension all around you, so you will be happiest spending as much time by yourself as possible, Cancer. If you must interact with people, keep your communication clear and concise. There is room for misunderstanding, which could result in a major blowup over a minor event. It simply is not worth the trouble being with people today. Seclusion is the only place where you will find peace.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Leo', 'Sep 17, 2025',
         'You are ready for a change, Leo, there is no doubt about it. As you grow older your interests broaden, and you are considering pursuing some of these new interests in earnest. Perhaps school beckons, or some adult education courses. You are ready to make a new place for yourself in the world. Go ahead and get started!');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Virgo', 'Sep 17, 2025',
         'You have never looked better, Virgo. Your partner notices, too, and showers you with extra affection and perhaps even an unexpected gift. This should put a smile on your face! At work, you may be given responsibilities beyond your usual job. Take care to do this special assignment well. If you do, other advancements are likely to follow.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Libra', 'Sep 17, 2025',
         'Sometimes a little indulgence has value far beyond its price, Libra. A bubble bath in the middle of the day, a luxurious hour spent browsing in a bookstore, a special outfit you have wanted for a long time - these are a few of the ways you could perk up your spirits. Why not? You could use a boost.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Scorpio', 'Sep 17, 2025',
         'You feel as though you have turned a financial and professional corner, Scorpio. Recent accomplishments have you feeling energized and on top of the world! You exude confidence. It is a good feeling, is not it? Members of the opposite sex are especially attracted to you right now. And who could blame them? You are looking great!');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Sagittarius', 'Sep 17, 2025',
         'Who knew you were so talented, Sagittarius? A creation done long ago suddenly takes on a life of its own. A short story written and submitted long ago is pulled from the bottom of the slush pile. Or a portrait you painted gets a second admiring look. Whatever the circumstances, you enjoy the recognition. Your work is not the only thing receiving admiring glances. Your partner appreciates you, too!');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Capricorn', 'Sep 17, 2025',
         'Loving care is prescribed for someone in your family, Capricorn. Offer a bowl of soup and some tea, but beyond that try and stay out of the way. Sometimes uninterrupted quiet is the best cure of all. You could use a bit of this yourself. Why not curl up with a good book? Even if it is the middle of the day, draw the shades and pretend it is night.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Aquarius', 'Sep 17, 2025',
         'There is tension in the air, Aquarius, but there is little you can do about it. The harsh atmosphere is in stark contrast to the frivolity you felt over the last several days. It seems you received some good news. Perhaps you were finally recognized for your hard work? Do not brag about your accomplishments. It would only exacerbate the situation. Be patient. Avoid confrontation.');
-INSERT INTO horoscope_tbl (zodiac, currentDay, narrative)
+INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Pisces', 'Sep 17, 2025',
         'You might be in a financial jam right now, Pisces. The stress of the situation has you considering some radical solutions. Would it really benefit your family if you took a second job? Confide in a friend and see if he or she can help you find a more agreeable solution. Perhaps a relative could give you a low-interest loan.');
 

@@ -9,7 +9,7 @@ SET DEFINE OFF;
  * Author:    eomisore                                                        *
  * File:      droperrorvault.sql                                              *
  * Created:   08/09/2025, 00:15                                               *
- * Modified:  08/09/2025, 00:15                                               *
+ * Modified:  24/09/2025, 00:32                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -35,9 +35,11 @@ SET DEFINE OFF;
  ******************************************************************************/
 
 PROMPT "Dropping Package"
+DROP PACKAGE alert_log_pkg;
 DROP PACKAGE error_vault_pkg;
 
 PROMPT "Dropping Tables"
+DROP TABLE alert_log_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE error_vault_tbl CASCADE CONSTRAINTS purge;
 
 SHOW ERRORS
