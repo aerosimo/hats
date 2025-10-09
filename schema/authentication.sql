@@ -99,11 +99,8 @@ CREATE TABLE scrutiny_tbl
 (
     audit_id     NUMBER GENERATED ALWAYS AS IDENTITY,
     email        VARCHAR2(200 BYTE) NOT NULL,
-    inet_addr    VARCHAR2(80),
-    device_info  VARCHAR2(200),
     action_type  VARCHAR2(50) NOT NULL, -- LOGIN, LOGOUT, PASSWORD_RESET, SIGNUP, MFA_ISSUED, MFA_CONFIRMED, EMAIL_VERIFIED
     action_at    TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL,
-    session_id   NUMBER, -- FK to session table if relevant
     notes        VARCHAR2(4000),
     modifiedBy   VARCHAR2(100 BYTE),
     modifiedDate TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL
@@ -133,10 +130,6 @@ ALTER TABLE mfa_tbl
     ADD CONSTRAINT mfa_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
 ALTER TABLE user_session_tbl
     ADD CONSTRAINT sess_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE scrutiny_tbl
-    ADD CONSTRAINT scrutiny_email_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE scrutiny_tbl
-    ADD CONSTRAINT scrutiny_session_fk FOREIGN KEY (session_id) REFERENCES user_session_tbl (session_id) ON DELETE CASCADE;
 
 -- Setting Unique Key
 ALTER TABLE authentication_tbl
@@ -178,10 +171,7 @@ CREATE TABLE user_session_history_tbl AS
 SELECT *
 FROM user_session_tbl
 WHERE 1 = 0;
-CREATE TABLE scrutiny_history_tbl AS
-SELECT *
-FROM scrutiny_tbl
-WHERE 1 = 0;
+
 ALTER TABLE authentication_history_tbl
     ADD modifiedReason VARCHAR2(200);
 ALTER TABLE authentication_history_tbl
@@ -197,10 +187,6 @@ ALTER TABLE mfa_history_tbl
 ALTER TABLE user_session_history_tbl
     ADD modifiedReason VARCHAR2(200);
 ALTER TABLE user_session_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE scrutiny_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE scrutiny_history_tbl
     ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
 
 PROMPT "Commenting Tables"
@@ -256,10 +242,7 @@ COMMENT ON COLUMN scrutiny_tbl.audit_id IS 'This is the primary identifier';
 COMMENT ON COLUMN scrutiny_tbl.email IS 'This is the primary identifier';
 COMMENT ON COLUMN scrutiny_tbl.action_type IS 'This stores the type of action such as LOGIN, LOGOUT, PASSWORD_RESET, SIGNUP, MFA_ISSUED, MFA_CONFIRMED, EMAIL_VERIFIED';
 COMMENT ON COLUMN scrutiny_tbl.action_at IS 'This store the time the action occurs';
-COMMENT ON COLUMN scrutiny_tbl.session_id IS 'This store the time the session id';
 COMMENT ON COLUMN scrutiny_tbl.notes IS 'This stores any other information';
-COMMENT ON COLUMN scrutiny_tbl.inet_addr IS 'This user internet IP address';
-COMMENT ON COLUMN scrutiny_tbl.device_info IS 'any device info such as mac address';
 COMMENT ON COLUMN scrutiny_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN scrutiny_tbl.modifiedDate IS 'Audit column - date of last update.';
 
@@ -551,36 +534,6 @@ EXCEPTION
 END;
 /
 
-CREATE OR REPLACE TRIGGER scrutiny_audit_trg
-    AFTER UPDATE OR DELETE
-    ON scrutiny_tbl
-    FOR EACH ROW
-DECLARE
-    v_error_message   VARCHAR2(4000);
-    v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
-BEGIN
-    -- Determine whether the action is an update or delete
-    IF UPDATING THEN
-        v_modified_reason := 'Updated';
-    ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
-    END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO scrutiny_history_tbl(audit_id,email,inet_addr,device_info,action_type,action_at,session_id,notes,modifiedBy,modifiedDate,modifiedReason)
-    VALUES (:OLD.audit_id,:OLD.email,:OLD.inet_addr,:OLD.device_info,:OLD.action_type,:OLD.action_at,:OLD.session_id,:OLD.notes,:OLD.modifiedBy,:OLD.modifiedDate, v_modified_reason);
-EXCEPTION
-    WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'scrutiny_audit_trg (UPDATE/DELETE): ' || :NEW.email,
-                o_response => v_response
-        );
-        RAISE;
-END;
-/
 
 PROMPT "Enabling Triggers"
 
@@ -590,6 +543,10 @@ ALTER TRIGGER verification_trg ENABLE;
 ALTER TRIGGER mfa_trg ENABLE;
 ALTER TRIGGER user_session_trg ENABLE;
 ALTER TRIGGER scrutiny_trg ENABLE;
+ALTER TRIGGER authentication_audit_trg ENABLE;
+ALTER TRIGGER verification_audit_trg ENABLE;
+ALTER TRIGGER mfa_audit_trg ENABLE;
+ALTER TRIGGER user_session_audit_trg ENABLE;
 
 PROMPT "Creating Package Header"
 --------------------------------------------------------------
@@ -630,6 +587,8 @@ AS
     =================================================================================
     | 08-SEP-25	| eomisore 	| Created initial script.|
     =================================================================================
+    | 05-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+    =================================================================================
     */
 
     -- Get Verification Code
@@ -644,7 +603,6 @@ AS
         i_email IN VARCHAR2,
         i_actionType IN VARCHAR2,
         i_notes IN VARCHAR2,
-        i_sessionId IN VARCHAR2,
         i_modifiedBy IN VARCHAR2);
 
     -- Get MFA token
@@ -724,6 +682,20 @@ AS
         i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
 
+    -- Reset Account Password
+    PROCEDURE update_account(
+        i_email IN VARCHAR2,
+        i_username IN VARCHAR2,
+        i_oldpassword IN VARCHAR2,
+        i_newpassword IN VARCHAR2,
+        i_modifiedBy IN VARCHAR2,
+        o_response OUT VARCHAR2);
+
+    -- Delete Account
+    PROCEDURE delete_account(
+        i_email IN VARCHAR2,
+        o_response OUT VARCHAR2);
+
 END auth_pkg;
 /
 
@@ -766,6 +738,8 @@ AS
     =================================================================================
     | 08-SEP-25	| eomisore 	| Created initial script.|
     =================================================================================
+    | 05-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+    =================================================================================
     */
     -- Get Verification Code
     PROCEDURE get_verification(
@@ -782,6 +756,8 @@ AS
         VALUES (i_email, i_modifiedBy)
         RETURNING verification_code INTO o_verificationCode;
         o_response := 'success';
+        -- insert records for audit purpose
+        audit(i_email, 'VERIFICATION_REQUESTED', 'Verification code was successfully requested', i_modifiedBy);
     EXCEPTION
         WHEN OTHERS THEN
             v_error_message := SUBSTR(SQLERRM, 1, 4000);
@@ -799,15 +775,14 @@ AS
         i_email IN VARCHAR2,
         i_actionType IN VARCHAR2,
         i_notes IN VARCHAR2,
-        i_sessionId IN VARCHAR2,
         i_modifiedBy IN VARCHAR2)
     AS
         v_error_message VARCHAR2(4000);
         v_response      VARCHAR2(100);
     BEGIN
         -- insert audit records
-        INSERT INTO scrutiny_tbl(email, action_type, notes, session_id, modifiedBy)
-        VALUES (i_email, i_actionType, i_notes, i_sessionId, i_modifiedBy);
+        INSERT INTO scrutiny_tbl(email, action_type, notes, modifiedBy)
+        VALUES (i_email, i_actionType, i_notes, i_modifiedBy);
     EXCEPTION
         WHEN OTHERS THEN
             v_error_message := SUBSTR(SQLERRM, 1, 4000);
@@ -836,6 +811,8 @@ AS
         VALUES (i_email, i_inet, i_device, i_modifiedBy)
         RETURNING mfa_code INTO o_mfaCode;
         o_response := 'success';
+        -- insert records for audit purpose
+        audit(i_email, 'MFA_REQUEST', 'Multi factor token was successfully requested', i_modifiedBy);
     EXCEPTION
         WHEN OTHERS THEN
             v_error_message := SUBSTR(SQLERRM, 1, 4000);
@@ -864,6 +841,8 @@ AS
         VALUES (i_email, i_inet, i_device, i_modifiedBy)
         RETURNING session_token INTO o_token;
         o_response := 'success';
+        -- insert records for audit purpose
+        audit(i_email, 'SESSION_REQUEST', 'Session token was successfully requested', i_modifiedBy);
     EXCEPTION
         WHEN OTHERS THEN
             v_error_message := SUBSTR(SQLERRM, 1, 4000);
@@ -893,7 +872,7 @@ AS
         -- Generate and return authentication token
         get_verification(i_email, i_modifiedBy, o_verificationCode, v_response);
         -- insert records for audit purpose
-        audit(i_email, 'EMAIL_VERIFICATION_ISSUED', 'Verification code issued', '', i_modifiedBy);
+        audit(i_email, 'EMAIL_VERIFICATION_ISSUED', 'Verification code issued', i_modifiedBy);
         o_response := 'success';
     EXCEPTION
         WHEN OTHERS THEN
@@ -933,7 +912,7 @@ AS
                 modifiedBy     = i_modifiedBy
             WHERE email = i_email;
             -- insert records for audit purpose
-            audit(i_email, 'EMAIL_VERIFIED', 'Email verified successfully', '', i_modifiedBy);
+            audit(i_email, 'EMAIL_VERIFIED', 'Email verified successfully', i_modifiedBy);
             o_response := 'success';
         ELSE
             o_response := 'invalid or expired verification code';
@@ -984,7 +963,7 @@ AS
             SET last_login = SYSTIMESTAMP, modifiedBy = i_modifiedBy
             WHERE email = i_email;
             -- insert records for audit purpose
-            audit(i_email, 'LOGIN', 'Login successful (MFA confirmed)', '', i_modifiedBy);
+            audit(i_email, 'LOGIN', 'Login successful (MFA confirmed)', i_modifiedBy);
             o_response := 'success';
         ELSE
             o_response := 'invalid or expired MFA token';
@@ -1026,20 +1005,20 @@ AS
             -- Check if an account is active and password matches
             IF v_status != 'Active' THEN
                 -- insert records for audit purpose
-                audit(i_email, 'FAILED_LOGIN', 'Account locked', '', i_modifiedBy);
+                audit(i_email, 'FAILED_LOGIN', 'Account locked', i_modifiedBy);
                 o_response := 'account locked';
             ELSIF enc_dec.decrypt(utl_raw.cast_to_varchar2(utl_encode.base64_decode(v_password))) != i_password THEN
                 UPDATE authentication_tbl SET failed_login = NVL(failed_login,0) + 1, modifiedBy = i_modifiedBy
                 WHERE email = i_email;
                 -- insert records for audit purpose
-                audit(i_email, 'FAILED_LOGIN', 'Failed password', '', i_modifiedBy);
+                audit(i_email, 'FAILED_LOGIN', 'Failed password', i_modifiedBy);
                 o_response := 'invalid credentials';
             ELSE
                 -- password matched. Reset failed_login.
                 UPDATE authentication_tbl SET failed_login = 0, modifiedBy = i_modifiedBy WHERE email = i_email;
                 get_mfa(i_email,i_inet,i_device,i_modifiedBy,o_mfaCode,o_response);
                 -- insert records for audit purpose
-                audit(i_email, 'MFA_ISSUED', 'MFA code issued (login step)', '', i_modifiedBy);
+                audit(i_email, 'MFA_ISSUED', 'MFA code issued (login step)', i_modifiedBy);
             END IF;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
@@ -1076,7 +1055,7 @@ AS
         UPDATE user_session_tbl SET active_flag = 'N', modifiedBy = i_modifiedBy
         WHERE email = i_email AND session_token = i_sessionToken AND active_flag = 'Y';
         -- insert records for audit purpose
-        audit(i_email, 'MFA_ISSUED', 'MFA code issued (login step)', i_sessionToken, i_modifiedBy);
+        audit(i_email, 'MFA_ISSUED', 'MFA code issued (login step)', i_modifiedBy);
         o_response := 'success';
     EXCEPTION
         WHEN OTHERS THEN
@@ -1103,7 +1082,7 @@ AS
         -- Generate and return authentication token
         get_verification(i_email, i_modifiedBy, o_verificationCode, o_response);
         -- insert records for audit purpose
-        audit(i_email, 'FORGOT PASSWORD', 'Verification code issued for forget password', '', i_modifiedBy);
+        audit(i_email, 'FORGOT PASSWORD', 'Verification code issued for forget password', i_modifiedBy);
         o_response := 'success';
     EXCEPTION
         WHEN OTHERS THEN
@@ -1147,7 +1126,7 @@ AS
                     modifiedBy = i_modifiedBy
             WHERE email = i_email;
             -- insert records for audit purpose
-            audit(i_email, 'PASSWORD_RESET', 'Password reset via verification code', '', i_modifiedBy);
+            audit(i_email, 'PASSWORD_RESET', 'Password reset via verification code', i_modifiedBy);
             o_response := 'success';
         END IF;
     EXCEPTION
@@ -1161,6 +1140,81 @@ AS
             );
             o_response := 'reset password error: ' || v_error_message;
     END reset_password;
+
+    -- Reset Password
+    PROCEDURE update_account(
+        i_email IN VARCHAR2,
+        i_username IN VARCHAR2,
+        i_oldpassword IN VARCHAR2,
+        i_newpassword IN VARCHAR2,
+        i_modifiedBy IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE authentication_tbl
+        SET username = i_username, password = utl_encode.base64_encode(utl_raw.cast_to_raw(enc_dec.encrypt(i_newpassword))), modifiedBy = i_modifiedBy
+        WHERE email = i_email
+        AND enc_dec.decrypt(utl_raw.cast_to_varchar2(utl_encode.base64_decode(password))) = i_oldpassword;
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'auth_pkg (UPDATE ACCOUNT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'invalid credentials';
+        WHEN OTHERS THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'auth_pkg (UPDATE ACCOUNT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'update account error: ' || v_error_message;
+    END update_account;
+
+    -- Delete Account
+    PROCEDURE delete_account(
+        i_email IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_error_message VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        DELETE FROM authentication_tbl
+        WHERE email = i_email;
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'auth_pkg (DELETE ACCOUNT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'invalid credentials';
+        WHEN OTHERS THEN
+            v_error_message := SUBSTR(SQLERRM, 1, 4000);
+            error_vault_pkg.store_error(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_error_message,
+                    i_faultservice => 'auth_pkg (DELETE ACCOUNT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'delete account error: ' || v_error_message;
+    END delete_account;
+
+
+
+
+
 END auth_pkg;
 /
 
