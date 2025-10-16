@@ -2,7 +2,6 @@ PROMPT "Dropping Authentication Schema"
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;
 
-
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
@@ -35,13 +34,14 @@ SET DEFINE OFF;
  ******************************************************************************/
 
 PROMPT "Dropping Authentication Tables"
-DROP TABLE scrutiny_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE user_session_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE session_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE mfa_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE verification_history_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE authentication_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE jwt_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE jwt_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE scrutiny_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE user_session_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE session_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE mfa_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE verification_tbl CASCADE CONSTRAINTS purge;
 DROP TABLE authentication_tbl CASCADE CONSTRAINTS purge;
@@ -52,4 +52,4 @@ DROP PACKAGE auth_pkg;
 SHOW ERRORS
 /
 
-PROMPT "End of dropping Account Schema."
+PROMPT "End of dropping Authentication Schema."

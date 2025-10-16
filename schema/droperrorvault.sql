@@ -35,10 +35,10 @@ SET DEFINE OFF;
  ******************************************************************************/
 
 PROMPT "Dropping Package"
-DROP PACKAGE error_vault_pkg;
+DROP PACKAGE errorVault_pkg;
 
 PROMPT "Dropping Tables"
-DROP TABLE error_vault_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE errorVault_tbl CASCADE CONSTRAINTS purge;
 
 SHOW ERRORS
 /

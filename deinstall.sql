@@ -41,3 +41,4 @@ SET DEFINE OFF;
 @schema/droperrorvault.sql
 @schema/dropauthentication.sql
 @schema/dropprofile.sql
+@schema/dropaccount.sql

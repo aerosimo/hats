@@ -40,73 +40,78 @@ PROMPT "Creating Tables"
 
 CREATE TABLE images_tbl
 (
-    email        VARCHAR2(200 BYTE),
-    avatar       VARCHAR2(100 BYTE),
-    modifiedBy   VARCHAR2(50 BYTE),
-    modifiedDate TIMESTAMP
+    username        VARCHAR2(200 BYTE) NOT NULL,
+    email           VARCHAR2(200 BYTE),
+    avatar          BLOB,
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 CREATE TABLE person_tbl
 (
-    email        VARCHAR2(200 BYTE),
-    title        VARCHAR2(50 BYTE),
-    firstName    VARCHAR2(100 BYTE),
-    middleName   VARCHAR2(100 BYTE),
-    lastName     VARCHAR2(100 BYTE),
-    zodiacSign   VARCHAR2(30 BYTE),
-    gender       VARCHAR2(30 BYTE),
-    birthday     DATE,
-    age          VARCHAR2(10 BYTE),
-    modifiedBy   VARCHAR2(50 BYTE),
-    modifiedDate TIMESTAMP
+    username        VARCHAR2(200 BYTE) NOT NULL,
+    email           VARCHAR2(200 BYTE),
+    title           VARCHAR2(50 BYTE),
+    firstName       VARCHAR2(100 BYTE),
+    middleName      VARCHAR2(100 BYTE),
+    lastName        VARCHAR2(100 BYTE),
+    zodiacSign      VARCHAR2(20 BYTE),
+    gender          VARCHAR2(30 BYTE),
+    birthday        DATE,
+    age             VARCHAR2(10 BYTE),
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 CREATE TABLE address_tbl
 (
-    email        VARCHAR2(200 BYTE),
-    firstline    VARCHAR2(100 BYTE),
-    secondline   VARCHAR2(100 BYTE),
-    thirdline    VARCHAR2(100 BYTE),
-    city         VARCHAR2(100 BYTE),
-    postcode     VARCHAR2(20 BYTE),
-    country      VARCHAR2(100 BYTE),
-    modifiedBy   VARCHAR2(50 BYTE),
-    modifiedDate TIMESTAMP
+    username        VARCHAR2(200 BYTE) NOT NULL,
+    email           VARCHAR2(200 BYTE),
+    firstline       VARCHAR2(100 BYTE),
+    secondline      VARCHAR2(100 BYTE),
+    thirdline       VARCHAR2(100 BYTE),
+    city            VARCHAR2(100 BYTE),
+    postcode        VARCHAR2(20 BYTE),
+    country         VARCHAR2(100 BYTE),
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 CREATE TABLE contact_tbl
 (
-    email        VARCHAR2(200 BYTE),
-    channel      VARCHAR2(40 BYTE),
-    address      VARCHAR2(100 BYTE),
-    consent      VARCHAR2(10 BYTE),
-    modifiedBy   VARCHAR2(50 BYTE),
-    modifiedDate TIMESTAMP
+    username        VARCHAR2(200 BYTE) NOT NULL,
+    email           VARCHAR2(200 BYTE),
+    channel         VARCHAR2(40 BYTE),
+    address         VARCHAR2(100 BYTE),
+    consent         VARCHAR2(10 BYTE) DEFAULT 'YES',
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 CREATE TABLE profile_tbl
 (
-    email         VARCHAR2(200 BYTE),
-    maritalStatus VARCHAR2(50 BYTE),
-    height        VARCHAR2(20 BYTE),
-    weight        VARCHAR2(20 BYTE),
-    ethnicity     VARCHAR2(50 BYTE),
-    religion      VARCHAR2(50 BYTE),
-    eyeColour     VARCHAR2(20 BYTE),
-    phenotype     VARCHAR2(50 BYTE),
-    genotype      VARCHAR2(50 BYTE),
-    disability    VARCHAR2(50 BYTE),
-    modifiedBy    VARCHAR2(50 BYTE),
-    modifiedDate  TIMESTAMP
+    username        VARCHAR2(200 BYTE) NOT NULL,
+    email           VARCHAR2(200 BYTE),
+    maritalStatus   VARCHAR2(50 BYTE),
+    height          VARCHAR2(20 BYTE),
+    weight          VARCHAR2(20 BYTE),
+    ethnicity       VARCHAR2(50 BYTE),
+    religion        VARCHAR2(50 BYTE),
+    eyeColour       VARCHAR2(20 BYTE),
+    phenotype       VARCHAR2(50 BYTE),
+    genotype        VARCHAR2(50 BYTE),
+    disability      VARCHAR2(50 BYTE),
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 CREATE TABLE horoscope_tbl
 (
-    zodiacSign   VARCHAR2(20 BYTE),
-    currentDay   VARCHAR2(50 BYTE),
-    narrative    VARCHAR2(4000 BYTE),
-    modifiedBy   VARCHAR2(50 BYTE),
-    modifiedDate TIMESTAMP
+    zodiacSign      VARCHAR2(20 BYTE),
+    currentDay      VARCHAR2(50 BYTE),
+    narrative       VARCHAR2(4000 BYTE),
+    modifiedBy      VARCHAR2(100 BYTE),
+    modifiedDate    TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL
 );
 
 PROMPT "Setting Constraints"
@@ -115,24 +120,16 @@ PROMPT "Setting Constraints"
 ------------------------------------------------------------
 
 -- Setting Unique Key
-ALTER TABLE horoscope_tbl
-    ADD CONSTRAINT zodiacSign_unq UNIQUE (zodiacSign);
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT profile_unq UNIQUE (email);
+ALTER TABLE horoscope_tbl ADD CONSTRAINT zodiacSign_unq UNIQUE (zodiacSign);
+ALTER TABLE profile_tbl ADD CONSTRAINT profile_unq UNIQUE (email);
 
 -- Setting Foreign Key
-ALTER TABLE images_tbl
-    ADD CONSTRAINT images_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE person_tbl
-    ADD CONSTRAINT person_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE address_tbl
-    ADD CONSTRAINT address_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE contact_tbl
-    ADD CONSTRAINT contact_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE profile_tbl
-        ADD CONSTRAINT profile_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
-ALTER TABLE person_tbl
-        ADD CONSTRAINT person_zodiacSign_fk FOREIGN KEY (zodiacSign) REFERENCES horoscope_tbl (zodiacSign);
+ALTER TABLE images_tbl ADD CONSTRAINT images_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
+ALTER TABLE person_tbl ADD CONSTRAINT person_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
+ALTER TABLE address_tbl ADD CONSTRAINT address_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
+ALTER TABLE contact_tbl ADD CONSTRAINT contact_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
+ALTER TABLE profile_tbl ADD CONSTRAINT profile_fk FOREIGN KEY (email) REFERENCES authentication_tbl (email) ON DELETE CASCADE;
+ALTER TABLE person_tbl ADD CONSTRAINT zodiac_fk FOREIGN KEY (zodiacSign) REFERENCES horoscope_tbl (zodiacSign);
 
 -- Setting Check Constraint
 ALTER TABLE person_tbl
@@ -153,28 +150,14 @@ ALTER TABLE person_tbl
                                                'Master', 'Pastor', 'President', 'Rabbi', 'Senator',
                                                'Sergeant', 'Sheikh', 'Sheikha', 'Sultan',
                                                'Viscount', 'Viscountess')) ENABLE;
-ALTER TABLE person_tbl
-    ADD CONSTRAINT pergen_chk CHECK (gender IN ('Male', 'Female')) ENABLE;
-ALTER TABLE contact_tbl
-    ADD CONSTRAINT channel_chk CHECK (channel IN ('Phone', 'Email', 'Fax', 'Twitter', 'Facebook',
-                                                  'LinkedIn', 'Snapchat', 'Website')) ENABLE;
-ALTER TABLE contact_tbl
-    ADD CONSTRAINT consent_chk CHECK (consent IN ('YES', 'NO')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT maritalStatus_Chk CHECK (maritalStatus IN ('Separated', 'Widowed', 'Single',
-                                                              'Married', 'Lone', 'Live-in',
-                                                              'Estranged', 'EngAged', 'Divorced',
-                                                              'De Facto', 'Common Law')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT genotype_Chk CHECK (genotype IN ('AA', 'AS', 'SS', 'AC')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT phenotype_Chk CHECK (phenotype IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-',
-                                                      'AB+', 'AB-')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT religion_Chk CHECK (religion IN ('Christianity', 'Islam', 'Atheist', 'Hinduism',
-                                                    'Buddhism', 'Sikhism', 'Judaism')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT disability_Chk CHECK (disability IN ('Spina Bifida', 'Spinal Cord Injury',
+ALTER TABLE person_tbl ADD CONSTRAINT pergen_chk CHECK (gender IN ('Male', 'Female')) ENABLE;
+ALTER TABLE contact_tbl ADD CONSTRAINT channel_chk CHECK (channel IN ('Phone', 'Email', 'Fax', 'Twitter', 'Facebook', 'LinkedIn', 'Snapchat', 'Website')) ENABLE;
+ALTER TABLE contact_tbl ADD CONSTRAINT consent_chk CHECK (consent IN ('YES', 'NO')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT maritalStatus_Chk CHECK (maritalStatus IN ('Separated', 'Widowed', 'Single', 'Married', 'Lone', 'Live-in', 'Estranged', 'EngAged', 'Divorced', 'De Facto', 'Common Law')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT genotype_Chk CHECK (genotype IN ('AA', 'AS', 'SS', 'AC')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT phenotype_Chk CHECK (phenotype IN ('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT religion_Chk CHECK (religion IN ('Christianity', 'Islam', 'Atheist', 'Hinduism', 'Buddhism', 'Sikhism', 'Judaism')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT disability_Chk CHECK (disability IN ('Spina Bifida', 'Spinal Cord Injury',
                                                         'Amputation', 'Diabetes',
                                                         'Chronic Fatigue Syndrome', 'Carpal Tunnel',
                                                         'Arthritis', 'Learning Disability',
@@ -184,11 +167,8 @@ ALTER TABLE profile_tbl
                                                         'Post Traumatic Stress Disorder', 'Blindness',
                                                         'Deafness', 'Visual Impairment',
                                                         'Hard Of Hearing', 'None')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT eyeColour_Chk CHECK (eyeColour IN ('Amber', 'Blue', 'Brown', 'Grey', 'Green',
-                                                      'Hazel', 'Red', 'Violet')) ENABLE;
-ALTER TABLE profile_tbl
-    ADD CONSTRAINT ethnicity_Chk CHECK (ethnicity IN ('Indian', 'Pakistani', 'Bangladeshi',
+ALTER TABLE profile_tbl ADD CONSTRAINT eyeColour_Chk CHECK (eyeColour IN ('Amber', 'Blue', 'Brown', 'Grey', 'Green','Hazel', 'Red', 'Violet')) ENABLE;
+ALTER TABLE profile_tbl ADD CONSTRAINT ethnicity_Chk CHECK (ethnicity IN ('Indian', 'Pakistani', 'Bangladeshi',
                                                       'Caribbean', 'African', 'Chinese', 'Arab',
                                                       'British', 'Irish',
                                                       'Any other White background',
@@ -198,72 +178,50 @@ ALTER TABLE profile_tbl
                                                       'Any other Asian background',
                                                       'Any other Black background',
                                                       'Any other ethnic group')) ENABLE;
-ALTER TABLE horoscope_tbl
-    ADD CONSTRAINT zodiacSign_chk CHECK (zodiacSign IN ('Aries', 'Taurus', 'Gemini',
-                                                'Cancer', 'Leo', 'Virgo',
-                                                'Libra', 'Scorpio', 'Sagittarius',
-                                                'Capricorn', 'Aquarius', 'Pisces')) ENABLE;
+ALTER TABLE horoscope_tbl ADD CONSTRAINT zodiacSign_chk CHECK (zodiacSign IN ('Aries', 'Taurus', 'Gemini','Cancer', 'Leo', 'Virgo','Libra', 'Scorpio', 'Sagittarius','Capricorn', 'Aquarius', 'Pisces')) ENABLE;
 
 -- Create history tables
-CREATE TABLE person_history_tbl AS
-SELECT *
-FROM person_tbl
-WHERE 1 = 0;
-CREATE TABLE address_history_tbl AS
-SELECT *
-FROM address_tbl
-WHERE 1 = 0;
-CREATE TABLE images_history_tbl AS
-SELECT *
-FROM images_tbl
-WHERE 1 = 0;
-CREATE TABLE contact_history_tbl AS
-SELECT *
-FROM contact_tbl
-WHERE 1 = 0;
-CREATE TABLE profile_history_tbl AS
-SELECT *
-FROM profile_tbl
-WHERE 1 = 0;
-CREATE TABLE horoscope_history_tbl AS
-SELECT *
-FROM horoscope_tbl
-WHERE 1 = 0;
-ALTER TABLE person_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE person_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE address_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE address_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE images_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE images_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE contact_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE contact_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE profile_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE profile_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
-ALTER TABLE horoscope_history_tbl
-    ADD modifiedReason VARCHAR2(200);
-ALTER TABLE horoscope_history_tbl
-    ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+CREATE TABLE person_history_tbl AS SELECT * FROM person_tbl WHERE 1 = 0;
+CREATE TABLE address_history_tbl AS SELECT * FROM address_tbl WHERE 1 = 0;
+CREATE TABLE images_history_tbl AS SELECT * FROM images_tbl WHERE 1 = 0;
+CREATE TABLE contact_history_tbl AS SELECT * FROM contact_tbl WHERE 1 = 0;
+CREATE TABLE profile_history_tbl AS SELECT * FROM profile_tbl WHERE 1 = 0;
+CREATE TABLE horoscope_history_tbl AS SELECT * FROM horoscope_tbl WHERE 1 = 0;
+
+ALTER TABLE person_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE person_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE address_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE address_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE images_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE images_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE contact_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE contact_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE profile_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE profile_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
+ALTER TABLE horoscope_history_tbl ADD modifiedReason VARCHAR2(200);
+ALTER TABLE horoscope_history_tbl ADD archivedDate TIMESTAMP DEFAULT SYSTIMESTAMP;
 
 PROMPT "Commenting Tables"
 ---------------------------------------------------------------------
 -- COMMENTS for clarity (shorter and clearer)
 ---------------------------------------------------------------------
+COMMENT ON COLUMN images_tbl.username IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN images_tbl.email IS 'The account identifier for an image';
 COMMENT ON COLUMN images_tbl.avatar IS 'This is user avatar image';
 COMMENT ON COLUMN images_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN images_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE images_tbl IS 'A user image which is a visual representation of the user is stored here.';
 
+COMMENT ON COLUMN images_history_tbl.username IS 'This is contact username this could be an alias';
+COMMENT ON COLUMN images_history_tbl.email IS 'The account identifier for an image';
+COMMENT ON COLUMN images_history_tbl.avatar IS 'This is user avatar image';
+COMMENT ON COLUMN images_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN images_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN images_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN images_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+COMMENT ON TABLE images_history_tbl IS 'A user image which is a visual representation of the user is stored here.';
+
+COMMENT ON COLUMN person_tbl.username IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN person_tbl.title IS 'This is the title of a given contact (Mr., Ms., Dr., Rev., etc.)';
 COMMENT ON COLUMN person_tbl.firstName IS 'This is contact''s first name.';
 COMMENT ON COLUMN person_tbl.middleName IS 'This is contact''s middle name.';
@@ -276,6 +234,22 @@ COMMENT ON COLUMN person_tbl.modifiedBy IS 'Audit column - indicates who made la
 COMMENT ON COLUMN person_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE person_tbl IS 'Profile information for a person.';
 
+COMMENT ON COLUMN person_history_tbl.username IS 'This is contact username this could be an alias';
+COMMENT ON COLUMN person_history_tbl.title IS 'This is the title of a given contact (Mr., Ms., Dr., Rev., etc.)';
+COMMENT ON COLUMN person_history_tbl.firstName IS 'This is contact''s first name.';
+COMMENT ON COLUMN person_history_tbl.middleName IS 'This is contact''s middle name.';
+COMMENT ON COLUMN person_history_tbl.lastName IS 'This is contact''s last name.';
+COMMENT ON COLUMN person_history_tbl.gender IS 'This is contact''s Gender.';
+COMMENT ON COLUMN person_history_tbl.birthday IS 'This is contact''s date of birth.';
+COMMENT ON COLUMN person_history_tbl.age IS 'This is contact''s Age.';
+COMMENT ON COLUMN person_history_tbl.zodiacSign IS 'The zodiacSign is an area of the sky that extends approximately 8° north or south of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
+COMMENT ON COLUMN person_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN person_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN person_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN person_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+COMMENT ON TABLE person_history_tbl IS 'Profile information for a person.';
+
+COMMENT ON COLUMN address_tbl.username IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN address_tbl.email IS 'The account identifier for a Contact';
 COMMENT ON COLUMN address_tbl.firstline IS 'This is the first line of the Address';
 COMMENT ON COLUMN address_tbl.secondline IS 'This is the second line of the Address';
@@ -287,6 +261,21 @@ COMMENT ON COLUMN address_tbl.modifiedBy IS 'Audit column - indicates who made l
 COMMENT ON COLUMN address_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE address_tbl IS 'Physical Address Information.';
 
+COMMENT ON COLUMN address_history_tbl.username IS 'This is contact username this could be an alias';
+COMMENT ON COLUMN address_history_tbl.email IS 'The account identifier for a Contact';
+COMMENT ON COLUMN address_history_tbl.firstline IS 'This is the first line of the Address';
+COMMENT ON COLUMN address_history_tbl.secondline IS 'This is the second line of the Address';
+COMMENT ON COLUMN address_history_tbl.thirdline IS 'This is the third line of the Address.';
+COMMENT ON COLUMN address_history_tbl.city IS 'The city in which the Address is located.';
+COMMENT ON COLUMN address_history_tbl.postcode IS 'The postal code/zipcode of the Address.';
+COMMENT ON COLUMN address_history_tbl.country IS 'The country of the Address.';
+COMMENT ON COLUMN address_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN address_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN address_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN address_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+COMMENT ON TABLE address_tbl IS 'Physical Address Information.';
+
+COMMENT ON COLUMN contact_tbl.username IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN contact_tbl.email IS 'The account identifier for a Contact.';
 COMMENT ON COLUMN contact_tbl.channel IS 'This will list of available ways of contact. e.g Phone, email, twitter, facebook etc';
 COMMENT ON COLUMN contact_tbl.address IS 'This will be the actual contact Address i.e someone@somewhere.com';
@@ -295,6 +284,18 @@ COMMENT ON COLUMN contact_tbl.modifiedBy IS 'Audit column - indicates who made l
 COMMENT ON COLUMN contact_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE contact_tbl IS 'Profile information for list of contacts';
 
+COMMENT ON COLUMN contact_history_tbl.username IS 'This is contact username this could be an alias';
+COMMENT ON COLUMN contact_history_tbl.email IS 'The account identifier for a Contact.';
+COMMENT ON COLUMN contact_history_tbl.channel IS 'This will list of available ways of contact. e.g Phone, email, twitter, facebook etc';
+COMMENT ON COLUMN contact_history_tbl.address IS 'This will be the actual contact Address i.e someone@somewhere.com';
+COMMENT ON COLUMN contact_history_tbl.consent IS 'This is an indicator to say if the medium is a prefer mode of contact or not';
+COMMENT ON COLUMN contact_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN contact_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN contact_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN contact_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+COMMENT ON TABLE contact_history_tbl IS 'Profile information for list of contacts';
+
+COMMENT ON COLUMN profile_tbl.username IS 'This is contact username this could be an alias';
 COMMENT ON COLUMN profile_tbl.email IS 'The account identifier for profile';
 COMMENT ON COLUMN profile_tbl.maritalStatus IS 'This is contact''s marital status.';
 COMMENT ON COLUMN profile_tbl.height IS 'The measurement of someone or something from head to foot or from base to top. ';
@@ -309,6 +310,23 @@ COMMENT ON COLUMN profile_tbl.modifiedBy IS 'Audit column - indicates who made l
 COMMENT ON COLUMN profile_tbl.modifiedDate IS 'Audit column - date of last update.';
 COMMENT ON TABLE profile_tbl IS 'Profile information for a Contact.';
 
+COMMENT ON COLUMN profile_history_tbl.username IS 'This is contact username this could be an alias';
+COMMENT ON COLUMN profile_history_tbl.email IS 'The account identifier for profile';
+COMMENT ON COLUMN profile_history_tbl.maritalStatus IS 'This is contact''s marital status.';
+COMMENT ON COLUMN profile_history_tbl.height IS 'The measurement of someone or something from head to foot or from base to top. ';
+COMMENT ON COLUMN profile_history_tbl.weight IS 'This is the Weight of a person is usually taken to be the force on the person due to gravity.';
+COMMENT ON COLUMN profile_history_tbl.ethnicity IS 'This is the fact or state of belonging to a social group that has a common national or cultural tradition.';
+COMMENT ON COLUMN profile_history_tbl.religion IS 'The belief in and worship of a superhuman controlling power, especially a personal God or gods.';
+COMMENT ON COLUMN profile_history_tbl.eyeColour IS 'This is a polygenic phenotypic character determined by two distinct factors: pigmentation of the eye and the scattering of light by the turbid medium in the stroma of the iris';
+COMMENT ON COLUMN profile_history_tbl.phenotype IS 'This is a classification of blood based on the presence and absence of antibodies and inherited antigenic substances on the surface of red blood cells.';
+COMMENT ON COLUMN profile_history_tbl.disability IS 'This is indicate if the person is disable or not';
+COMMENT ON COLUMN profile_history_tbl.genotype IS 'This is the genetic constitution of an individual organism.';
+COMMENT ON COLUMN profile_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN profile_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN profile_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN profile_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+COMMENT ON TABLE profile_history_tbl IS 'Profile information for a Contact.';
+
 COMMENT ON TABLE horoscope_tbl IS 'Profile information for list of daily horoscope based on signs.';
 COMMENT ON COLUMN horoscope_tbl.zodiacSign IS 'The zodiacSign is an area of the sky that extends approximately 8° north or south (as measured in celestial latitude) of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
 COMMENT ON COLUMN horoscope_tbl.currentDay IS 'The current date means the date today or the date when something will happen.';
@@ -316,32 +334,48 @@ COMMENT ON COLUMN horoscope_tbl.narrative IS 'Your zodiacSign sign, or star sign
 COMMENT ON COLUMN horoscope_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
 COMMENT ON COLUMN horoscope_tbl.modifiedDate IS 'Audit column - date of last update.';
 
+COMMENT ON TABLE horoscope_history_tbl IS 'Profile information for list of daily horoscope based on signs.';
+COMMENT ON COLUMN horoscope_history_tbl.zodiacSign IS 'The zodiacSign is an area of the sky that extends approximately 8° north or south (as measured in celestial latitude) of the ecliptic, the apparent path of the Sun across the celestial sphere over the course of the year.';
+COMMENT ON COLUMN horoscope_history_tbl.currentDay IS 'The current date means the date today or the date when something will happen.';
+COMMENT ON COLUMN horoscope_history_tbl.narrative IS 'Your zodiacSign sign, or star sign, reflects the position of the sun when you were born. With its strong influence on your personality, character, and emotions, your sign is a powerful tool for understanding yourself and your relationships and of course, your sign can show you the way to an incredible life.';
+COMMENT ON COLUMN horoscope_history_tbl.modifiedBy IS 'Audit column - indicates who made last update.';
+COMMENT ON COLUMN horoscope_history_tbl.modifiedDate IS 'Audit column - date of last update.';
+COMMENT ON COLUMN horoscope_history_tbl.modifiedReason IS 'Audit column - indicates the DML operations.';
+COMMENT ON COLUMN horoscope_history_tbl.archivedDate IS 'Audit column - date of it was archived.';
+
 PROMPT "Creating Triggers"
 --------------------------------------------------------------
 -- TRIGGERS: update modified_date & modified_by automatically
 --------------------------------------------------------------
 
 CREATE OR REPLACE TRIGGER images_trg
-    BEFORE INSERT
+    BEFORE INSERT OR UPDATE
     ON images_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage  VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
-    -- Determine the action
-    IF UPDATING THEN
+    IF INSERTING THEN
+        IF :NEW.username IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20002, 'Username is mandatory and cannot be empty.');
+        END IF;
+        IF :NEW.email IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20003, 'Email is mandatory and cannot be empty.');
+        END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
+    ELSIF UPDATING THEN
+        IF :NEW.username IS NULL THEN SELECT :OLD.username INTO :NEW.username FROM DUAL; END IF;
         IF :NEW.email IS NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
         IF :NEW.avatar IS NULL THEN SELECT :OLD.avatar INTO :NEW.avatar FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
     END IF;
-    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
-    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'images_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -349,32 +383,38 @@ EXCEPTION
 END;
 /
 
-
 CREATE OR REPLACE TRIGGER images_audit_trg
     AFTER UPDATE OR DELETE
     ON images_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage    VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason  VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO images_history_tbl(username, email, avatar, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.avatar, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO images_history_tbl(username, email, avatar, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.avatar, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO images_history_tbl(email, avatar, modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.avatar, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'images_trg (UPDATE/DELETE): ' || :NEW.email,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'images_trg (UPSERT): ' ||
+                                  CASE
+                                      WHEN UPDATING THEN :NEW.email
+                                      WHEN DELETING THEN :OLD.email
+                                      END,
                 o_response => v_response
         );
         RAISE;
@@ -386,12 +426,17 @@ CREATE OR REPLACE TRIGGER person_trg
     ON person_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage  VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
-    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
-    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
     IF INSERTING THEN
+        IF :NEW.username IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20002, 'Username is mandatory and cannot be empty.');
+        END IF;
+        IF :NEW.email IS NULL THEN
+            RAISE_APPLICATION_ERROR(-20003, 'Email is mandatory and cannot be empty.');
+        END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
         -- Ensure required fields are populated
         IF :NEW.birthday IS NOT NULL THEN
             IF (:NEW.birthday > SYSDATE) THEN
@@ -444,6 +489,9 @@ BEGIN
         END IF;
     ELSIF UPDATING THEN
         -- Ensure required fields are populated;
+        IF :NEW.username IS NULL THEN SELECT :OLD.username INTO :NEW.username FROM DUAL; END IF;
+        IF :NEW.email IS NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
         IF :NEW.email IS NULL AND :OLD.email IS NOT NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
         IF :NEW.title IS NULL AND :OLD.title IS NOT NULL THEN SELECT :OLD.title INTO :NEW.title FROM DUAL; END IF;
         IF :NEW.firstName IS NULL AND :OLD.firstName IS NOT NULL THEN SELECT :OLD.firstName INTO :NEW.firstName FROM DUAL; END IF;
@@ -502,10 +550,10 @@ BEGIN
     END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'person_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -518,28 +566,28 @@ CREATE OR REPLACE TRIGGER person_audit_trg
     ON person_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage    VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason  VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO person_history_tbl(username, email, title, firstName, middleName, lastName, zodiacSign, gender, birthday, age, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username,:OLD.email, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiacSign, :OLD.gender, :OLD.birthday, :OLD.age, :OLD.modifiedBy, :OLD.modifiedDate,v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO person_history_tbl(username, email, title, firstName, middleName, lastName, zodiacSign, gender, birthday, age, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiacSign, :OLD.gender, :OLD.birthday, :OLD.age, :OLD.modifiedBy, :OLD.modifiedDate,v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO person_history_tbl(email, title, firstName, middleName, lastName, zodiacSign, gender, birthday, age,
-                                   modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.title, :OLD.firstName, :OLD.middleName, :OLD.lastName, :OLD.zodiacSign,
-            :OLD.gender, :OLD.birthday, :OLD.age, :OLD.modifiedBy, :OLD.modifiedDate,
-            v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'person_trg (UPDATE/DELETE): ' || :NEW.email,
                 o_response => v_response
         );
@@ -552,11 +600,16 @@ CREATE OR REPLACE TRIGGER address_trg
     ON address_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage  VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
     -- Determine the action
-    IF UPDATING THEN
+    IF INSERTING THEN
+        IF :NEW.username IS NULL THEN RAISE_APPLICATION_ERROR(-20002, 'Username is mandatory and cannot be empty.'); END IF;
+        IF :NEW.email IS NULL THEN RAISE_APPLICATION_ERROR(-20003, 'Email is mandatory and cannot be empty.'); END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
+    ELSIF UPDATING THEN
+        IF :NEW.username IS NULL THEN SELECT :OLD.username INTO :NEW.username FROM DUAL; END IF;
         IF :NEW.email IS NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
         IF :NEW.firstline IS NULL THEN SELECT :OLD.firstline INTO :NEW.firstline FROM DUAL; END IF;
         IF :NEW.secondline IS NULL THEN SELECT :OLD.secondline INTO :NEW.secondline FROM DUAL; END IF;
@@ -564,15 +617,14 @@ BEGIN
         IF :NEW.city IS NULL THEN SELECT :OLD.city INTO :NEW.city FROM DUAL; END IF;
         IF :NEW.postcode IS NULL THEN SELECT :OLD.postcode INTO :NEW.postcode FROM DUAL; END IF;
         IF :NEW.country IS NULL THEN SELECT :OLD.country INTO :NEW.country FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
     END IF;
-    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
-    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'address_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -585,27 +637,28 @@ CREATE OR REPLACE TRIGGER address_audit_trg
     ON address_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage    VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason  VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO address_history_tbl(username,email, firstline, secondline, thirdline, city, postcode, country, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.firstline, :OLD.secondline, :OLD.thirdline, :OLD.city, :OLD.postcode, :OLD.country, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO address_history_tbl(username,email, firstline, secondline, thirdline, city, postcode, country, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.firstline, :OLD.secondline, :OLD.thirdline, :OLD.city, :OLD.postcode, :OLD.country, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO address_history_tbl(email, firstline, secondline, thirdline, city, postcode, country, modifiedBy,
-                                    modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.firstline, :OLD.secondline, :OLD.thirdline, :OLD.city, :OLD.postcode, :OLD.country,
-            :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'address_trg (UPDATE/DELETE): ' || :NEW.email,
                 o_response => v_response
         );
@@ -618,24 +671,29 @@ CREATE OR REPLACE TRIGGER contact_trg
     ON contact_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
     -- Determine the action
-    IF UPDATING THEN
+    IF INSERTING THEN
+        IF :NEW.username IS NULL THEN RAISE_APPLICATION_ERROR(-20002, 'Username is mandatory and cannot be empty.'); END IF;
+        IF :NEW.email IS NULL THEN RAISE_APPLICATION_ERROR(-20003, 'Email is mandatory and cannot be empty.'); END IF;
+        IF :NEW.consent IS NULL THEN SELECT 'YES' INTO :NEW.consent FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
+    ELSIF UPDATING THEN
+        IF :NEW.username IS NULL THEN SELECT :OLD.username INTO :NEW.username FROM DUAL; END IF;
         IF :NEW.email IS NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
         IF :NEW.channel IS NULL THEN SELECT :OLD.channel INTO :NEW.channel FROM DUAL; END IF;
         IF :NEW.address IS NULL THEN SELECT :OLD.address INTO :NEW.address FROM DUAL; END IF;
         IF :NEW.consent IS NULL THEN SELECT :OLD.consent INTO :NEW.consent FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
     END IF;
-    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
-    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'contact_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -648,26 +706,28 @@ CREATE OR REPLACE TRIGGER contact_audit_trg
     ON contact_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage   VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO contact_history_tbl(username, email, channel, address, consent, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.channel, :OLD.address, :OLD.consent, :OLD.modifiedBy, :OLD.modifiedDate,v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO contact_history_tbl(username, email, channel, address, consent, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.channel, :OLD.address, :OLD.consent, :OLD.modifiedBy, :OLD.modifiedDate,v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO contact_history_tbl(email, channel, address, consent, modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.channel, :OLD.address, :OLD.consent, :OLD.modifiedBy, :OLD.modifiedDate,
-            v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'contact_trg (UPDATE/DELETE): ' || :NEW.email,
                 o_response => v_response
         );
@@ -680,11 +740,16 @@ CREATE OR REPLACE TRIGGER profile_trg
     ON profile_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage  VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
     -- Determine the action
-    IF UPDATING THEN
+    IF INSERTING THEN
+        IF :NEW.username IS NULL THEN RAISE_APPLICATION_ERROR(-20002, 'Username is mandatory and cannot be empty.'); END IF;
+        IF :NEW.email IS NULL THEN RAISE_APPLICATION_ERROR(-20003, 'Email is mandatory and cannot be empty.'); END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
+    ELSIF UPDATING THEN
+        IF :NEW.username IS NULL THEN SELECT :OLD.username INTO :NEW.username FROM DUAL; END IF;
         IF :NEW.email IS NULL THEN SELECT :OLD.email INTO :NEW.email FROM DUAL; END IF;
         IF :NEW.maritalStatus IS NULL THEN SELECT :OLD.maritalStatus INTO :NEW.maritalStatus FROM DUAL; END IF;
         IF :NEW.height IS NULL THEN SELECT :OLD.height INTO :NEW.height FROM DUAL; END IF;
@@ -695,18 +760,14 @@ BEGIN
         IF :NEW.phenotype IS NULL THEN SELECT :OLD.phenotype INTO :NEW.phenotype FROM DUAL; END IF;
         IF :NEW.genotype IS NULL THEN SELECT :OLD.genotype INTO :NEW.genotype FROM DUAL; END IF;
         IF :NEW.disability IS NULL THEN SELECT :OLD.disability INTO :NEW.disability FROM DUAL; END IF;
+        IF :NEW.modifiedBy IS NULL THEN SELECT :NEW.username INTO :NEW.modifiedBy FROM DUAL; END IF;
     END IF;
-    IF :NEW.email IS NULL THEN
-        RAISE_APPLICATION_ERROR(-20006, 'Account Identifier is Mandatory and cannot be empty.');
-    END IF;
-    IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
-    IF :NEW.modifiedBy IS NULL THEN SELECT USER INTO :NEW.modifiedBy FROM DUAL; END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'profile_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -719,27 +780,28 @@ CREATE OR REPLACE TRIGGER profile_audit_trg
     ON profile_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage    VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason  VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO profile_history_tbl(username, email, maritalStatus, height, weight, ethnicity, religion, eyeColour, phenotype, genotype, disability, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.maritalStatus, :OLD.height, :OLD.weight, :OLD.ethnicity, :OLD.religion, :OLD.eyeColour, :OLD.phenotype, :OLD.genotype, :OLD.disability, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO profile_history_tbl(username, email, maritalStatus, height, weight, ethnicity, religion, eyeColour, phenotype, genotype, disability, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.maritalStatus, :OLD.height, :OLD.weight, :OLD.ethnicity, :OLD.religion, :OLD.eyeColour, :OLD.phenotype, :OLD.genotype, :OLD.disability, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO profile_history_tbl(email, maritalStatus, height, weight, ethnicity, religion, eyeColour,
-                                    phenotype, genotype, disability, modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.email, :OLD.maritalStatus, :OLD.height, :OLD.weight, :OLD.ethnicity, :OLD.religion, :OLD.eyeColour,
-            :OLD.phenotype, :OLD.genotype, :OLD.disability, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'profile_trg (INSERT): ' || :NEW.email,
                 o_response => v_response
         );
@@ -752,7 +814,7 @@ CREATE OR REPLACE TRIGGER horoscope_trg
     ON horoscope_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message VARCHAR2(4000);
+    v_errorMessage VARCHAR2(4000);
     v_response      VARCHAR2(100);
 BEGIN
     IF :NEW.modifiedDate IS NULL THEN SELECT SYSTIMESTAMP INTO :NEW.modifiedDate FROM DUAL; END IF;
@@ -760,10 +822,10 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'horoscope_trg for profile: ' || :NEW.zodiacSign,
                 o_response => v_response
         );
@@ -776,26 +838,77 @@ CREATE OR REPLACE TRIGGER horoscope_audit_trg
     ON horoscope_tbl
     FOR EACH ROW
 DECLARE
-    v_error_message   VARCHAR2(4000);
+    v_errorMessage   VARCHAR2(4000);
     v_response        VARCHAR2(100);
-    v_modified_reason VARCHAR2(10);
+    v_modifiedReason VARCHAR2(10);
 BEGIN
     -- Determine whether the action is an update or delete
     IF UPDATING THEN
-        v_modified_reason := 'Updated';
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO horoscope_history_tbl(zodiacSign, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.zodiacSign, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     ELSIF DELETING THEN
-        v_modified_reason := 'Deleted';
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO horoscope_history_tbl(zodiacSign, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
+        VALUES (:OLD.zodiacSign, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modifiedReason);
     END IF;
-    -- Log the update or delete in the history table
-    INSERT INTO horoscope_history_tbl(zodiacSign, currentDay, narrative, modifiedBy, modifiedDate, modifiedReason)
-    VALUES (:OLD.zodiacSign, :OLD.currentDay, :OLD.narrative, :OLD.modifiedBy, :OLD.modifiedDate, v_modified_reason);
 EXCEPTION
     WHEN OTHERS THEN
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
                 i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
+                i_faultmessage => v_errorMessage,
                 i_faultservice => 'horoscope_trg (INSERT): ' || :NEW.zodiacSign,
+                o_response => v_response
+        );
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER authentication_audit_trg
+    AFTER INSERT OR UPDATE OR DELETE
+    ON authentication_tbl
+    FOR EACH ROW
+DECLARE
+    v_errorMessage    VARCHAR2(4000);
+    v_response        VARCHAR2(100);
+    v_modifiedReason  VARCHAR2(10);
+BEGIN
+    -- Determine whether the action is an update or delete
+    IF INSERTING THEN
+        INSERT INTO verification_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO session_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO mfa_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO profile_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO images_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO person_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO address_tbl(username,email,modifiedBy) VALUES (:NEW.username,:NEW.email,'Authentication Trigger');
+        INSERT INTO contact_tbl(username,email,channel,address,consent,modifiedBy) VALUES (:NEW.username,:NEW.email,'Email',:NEW.email,'YES','Authentication Trigger');
+        INSERT INTO jwt_tbl(username,email,password,accountStatus,modifiedBy) VALUES (:NEW.username,:NEW.email,:NEW.password,:NEW.accountStatus,'Authentication Trigger');
+    ELSIF UPDATING THEN
+        v_modifiedReason := 'Updated';
+        -- Log the update or delete in the history table
+        INSERT INTO authentication_history_tbl(username,email,password,emailVerified,failedLogin,lastLogin,accountStatus,modifiedBy,modifiedDate,modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.password, :OLD.emailVerified,:OLD.failedLogin,:OLD.lastLogin,:OLD.accountStatus,:OLD.modifiedBy,:OLD.modifiedDate, v_modifiedReason);
+    ELSIF DELETING THEN
+        v_modifiedReason := 'Deleted';
+        -- Log the update or delete in the history table
+        INSERT INTO authentication_history_tbl(username,email,password,emailVerified,failedLogin,lastLogin,accountStatus,modifiedBy,modifiedDate,modifiedReason)
+        VALUES (:OLD.username, :OLD.email, :OLD.password, :OLD.emailVerified,:OLD.failedLogin,:OLD.lastLogin,:OLD.accountStatus,:OLD.modifiedBy,:OLD.modifiedDate, v_modifiedReason);
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'authentication_audit_trg: ' ||
+                                  CASE
+                                      WHEN UPDATING THEN :NEW.email
+                                      WHEN DELETING THEN :OLD.email
+                                      END,
                 o_response => v_response
         );
         RAISE;
@@ -817,6 +930,7 @@ ALTER TRIGGER profile_trg ENABLE;
 ALTER TRIGGER horoscope_trg ENABLE;
 ALTER TRIGGER horoscope_audit_trg ENABLE;
 ALTER TRIGGER profile_audit_trg ENABLE;
+ALTER TRIGGER authentication_audit_trg ENABLE;
 
 PROMPT "Creating Package Header"
 -------------------------------------------
@@ -857,26 +971,57 @@ AS
     =================================================================================
     | 10-SEP-25	| eomisore 	| Created initial script.|
     =================================================================================
+    | 12-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+    =================================================================================
     */
-    -- Create or Update Identity
-    PROCEDURE SaveImage(
+    -- Find details from the address table
+    PROCEDURE getAddress(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
-        i_avatar IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2);
+        o_addressList OUT SYS_REFCURSOR);
 
-    PROCEDURE SavePerson(
+    -- Find details from the contact table
+    PROCEDURE getContact(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
-        i_title IN VARCHAR2,
-        i_firstName IN VARCHAR2,
-        i_middleName IN VARCHAR2,
-        i_lastName IN VARCHAR2,
-        i_gender IN VARCHAR2,
-        i_birthday IN DATE,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2);
+        o_contactList OUT SYS_REFCURSOR);
 
-    PROCEDURE SaveAddress(
+    -- Find details from the constellation table
+    PROCEDURE getHoroscope(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_astrologyList OUT SYS_REFCURSOR);
+
+    -- Find details from the image table
+    PROCEDURE getImage(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_avatarList OUT SYS_REFCURSOR);
+
+    -- Find details from the person table
+    PROCEDURE getPerson(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_personList OUT SYS_REFCURSOR);
+
+    -- Find details from the contact table
+    PROCEDURE getProfile(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_profileList OUT SYS_REFCURSOR);
+
+    -- Find details user details
+    PROCEDURE getSilhouette (
+        i_email           IN  VARCHAR2,
+        o_personList      OUT SYS_REFCURSOR,
+        o_avatarList      OUT SYS_REFCURSOR,
+        o_addressList     OUT SYS_REFCURSOR,
+        o_contactList     OUT SYS_REFCURSOR,
+        o_profileList     OUT SYS_REFCURSOR,
+        o_astrologyList   OUT SYS_REFCURSOR);
+
+    PROCEDURE saveAddress(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         i_firstline IN VARCHAR2,
         i_secondline IN VARCHAR2,
@@ -884,19 +1029,45 @@ AS
         i_city IN VARCHAR2,
         i_postcode IN VARCHAR2,
         i_country IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
 
-    PROCEDURE SaveContact(
+    PROCEDURE saveContact(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         i_channel IN VARCHAR2,
         i_address IN VARCHAR2,
         i_consent IN VARCHAR2,
+        o_response OUT VARCHAR2);
+
+    -- Update constellation table
+    PROCEDURE saveHoroscope(
+        i_zodiacSign IN VARCHAR2,
+        i_currentDay IN VARCHAR2,
+        i_narrative IN VARCHAR2,
         i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
 
+    -- Create or Update Identity
+    PROCEDURE saveImage(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_avatar IN BLOB,
+        o_response OUT VARCHAR2);
+
+    PROCEDURE savePerson(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_title IN VARCHAR2,
+        i_firstName IN VARCHAR2,
+        i_middleName IN VARCHAR2,
+        i_lastName IN VARCHAR2,
+        i_gender IN VARCHAR2,
+        i_birthday IN DATE,
+        o_response OUT VARCHAR2);
+
     -- Create or Update Profile
-    PROCEDURE SaveProfile(
+    PROCEDURE saveProfile(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         i_maritalStatus IN VARCHAR2,
         i_height IN VARCHAR2,
@@ -907,56 +1078,7 @@ AS
         i_phenotype IN VARCHAR2,
         i_genotype IN VARCHAR2,
         i_disability IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
         o_response OUT VARCHAR2);
-
-    -- Update constellation table
-    PROCEDURE SaveHoroscope(
-        i_zodiacSign IN VARCHAR2,
-        i_currentDay IN VARCHAR2,
-        i_narrative IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2);
-
-    -- Find details from the constellation table
-    PROCEDURE GetHoroscope(
-        i_email IN VARCHAR2,
-        o_astrologyList OUT SYS_REFCURSOR);
-
-    -- Find details from the image table
-    PROCEDURE GetImage(
-        i_email IN VARCHAR2,
-        o_avatarList OUT SYS_REFCURSOR);
-
-    -- Find details from the person table
-    PROCEDURE GetPerson(
-        i_email IN VARCHAR2,
-        o_personList OUT SYS_REFCURSOR);
-
-    -- Find details from the address table
-    PROCEDURE GetAddress(
-        i_email IN VARCHAR2,
-        o_addressList OUT SYS_REFCURSOR);
-
-    -- Find details from the contact table
-    PROCEDURE GetContact(
-        i_email IN VARCHAR2,
-        o_contactList OUT SYS_REFCURSOR);
-
-    -- Find details from the contact table
-    PROCEDURE GetProfile(
-        i_email IN VARCHAR2,
-        o_profileList OUT SYS_REFCURSOR);
-
-    -- Find details user details
-    PROCEDURE GetSilhouette (
-        i_email           IN  VARCHAR2,
-        o_personList      OUT SYS_REFCURSOR,
-        o_avatarList      OUT SYS_REFCURSOR,
-        o_addressList     OUT SYS_REFCURSOR,
-        o_contactList     OUT SYS_REFCURSOR,
-        o_profileList     OUT SYS_REFCURSOR,
-        o_astrologyList   OUT SYS_REFCURSOR);
 
 END profile_pkg;
 /
@@ -1000,345 +1122,16 @@ AS
     =================================================================================
     | 10-SEP-25	| eomisore 	| Created initial script.|
     =================================================================================
+    | 12-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+    =================================================================================
     */
-    -- Create or Update Identity
-    PROCEDURE SaveImage(
-        i_email IN VARCHAR2,
-        i_avatar IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE images_tbl
-        SET email  = i_email,
-            avatar     = i_avatar,
-            modifiedBy = i_modifiedBy
-        WHERE email = i_email
-        RETURNING email INTO o_response;
-        IF SQL%NOTFOUND THEN
-            INSERT INTO images_tbl(email, avatar, modifiedBy)
-            VALUES (i_email, i_avatar, i_modifiedBy)
-            RETURNING email INTO o_response;
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'IMAGE_SAVED', 'Image was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE IMAGE): ' || i_email,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SaveImage;
-
-    PROCEDURE SavePerson(
-        i_email IN VARCHAR2,
-        i_title IN VARCHAR2,
-        i_firstName IN VARCHAR2,
-        i_middleName IN VARCHAR2,
-        i_lastName IN VARCHAR2,
-        i_gender IN VARCHAR2,
-        i_birthday IN DATE,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE person_tbl
-        SET email  = i_email,
-            title      = i_title,
-            firstName  = i_firstName,
-            middleName = i_middleName,
-            lastName   = i_lastName,
-            gender     = i_gender,
-            birthday   = i_birthday,
-            modifiedBy = i_modifiedBy
-        WHERE email = i_email
-        RETURNING email INTO o_response;
-        IF SQL%NOTFOUND THEN
-            INSERT INTO person_tbl(email, title, firstName, middleName, lastName, gender, birthday, modifiedBy)
-            VALUES (i_email, i_title, i_firstName, i_middleName, i_lastName, i_gender, i_birthday, i_modifiedBy)
-            RETURNING email INTO o_response;
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'PERSON_SAVED', 'Person record was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE PERSON): ' || i_email,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SavePerson;
-
-    PROCEDURE SaveAddress(
-        i_email IN VARCHAR2,
-        i_firstline IN VARCHAR2,
-        i_secondline IN VARCHAR2,
-        i_thirdline IN VARCHAR2,
-        i_city IN VARCHAR2,
-        i_postcode IN VARCHAR2,
-        i_country IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE address_tbl
-        SET email  = i_email,
-            firstline  = i_firstline,
-            secondline = i_secondline,
-            thirdline  = i_thirdline,
-            city       = i_city,
-            postcode   = i_postcode,
-            country    = i_country,
-            modifiedBy = i_modifiedBy
-        WHERE email = i_email
-        RETURNING email INTO o_response;
-        IF SQL%NOTFOUND THEN
-            INSERT INTO address_tbl(email, firstline, secondline, thirdline, city, postcode, country, modifiedBy)
-            VALUES (i_email, i_firstline, i_secondline, i_thirdline, i_city, i_postcode, i_country, i_modifiedBy)
-            RETURNING email INTO o_response;
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'ADDRESS_SAVED', 'Address was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE ADDRESS): ' || i_email,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SaveAddress;
-
-    PROCEDURE SaveContact(
-        i_email IN VARCHAR2,
-        i_channel IN VARCHAR2,
-        i_address IN VARCHAR2,
-        i_consent IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE contact_tbl
-        SET email  = i_email,
-            channel    = i_channel,
-            address    = i_address,
-            consent    = i_consent,
-            modifiedBy = i_modifiedBy
-        WHERE email = i_email
-		AND channel = i_channel
-        RETURNING email INTO o_response;
-        IF SQL%NOTFOUND THEN
-            INSERT INTO contact_tbl(email, channel, address, consent, modifiedBy)
-            VALUES (i_email, i_channel, i_address, i_consent, i_modifiedBy)
-            RETURNING email INTO o_response;
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'CONTACT_SAVED', 'Contact was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE CONTACT): ' || i_email,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SaveContact;
-
-    -- Create or Update Profile
-    PROCEDURE SaveProfile(
-        i_email IN VARCHAR2,
-        i_maritalStatus IN VARCHAR2,
-        i_height IN VARCHAR2,
-        i_weight IN VARCHAR2,
-        i_ethnicity IN VARCHAR2,
-        i_religion IN VARCHAR2,
-        i_eyeColour IN VARCHAR2,
-        i_phenotype IN VARCHAR2,
-        i_genotype IN VARCHAR2,
-        i_disability IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE profile_tbl
-        SET email         = i_email,
-            maritalStatus = i_maritalStatus,
-            height        = i_height,
-            weight        = i_weight,
-            ethnicity     = i_ethnicity,
-            religion      = i_religion,
-            eyeColour     = i_eyeColour,
-            phenotype     = i_phenotype,
-            genotype      = i_genotype,
-            disability    = i_disability,
-            modifiedBy    = i_modifiedBy
-        WHERE email = i_email
-        RETURNING email INTO o_response;
-        IF SQL%NOTFOUND THEN
-            INSERT INTO profile_tbl(email, maritalStatus, height, weight, ethnicity, religion, eyeColour, phenotype,
-                                    genotype, disability, modifiedBy)
-            VALUES (i_email, i_maritalStatus, i_height, i_weight, i_ethnicity, i_religion, i_eyeColour, i_phenotype,
-                    i_genotype, i_disability, i_modifiedBy)
-            RETURNING email INTO o_response;
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'PROFILE_SAVED', 'Profile was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE PROFILE): ' || i_email,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SaveProfile;
-
-    -- Update constellation table
-    PROCEDURE SaveHoroscope(
-        i_zodiacSign IN VARCHAR2,
-        i_currentDay IN VARCHAR2,
-        i_narrative IN VARCHAR2,
-        i_modifiedBy IN VARCHAR2,
-        o_response OUT VARCHAR2)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        UPDATE horoscope_tbl
-        SET zodiacSign     = i_zodiacSign,
-            currentDay = i_currentDay,
-            narrative  = i_narrative,
-            modifiedBy = i_modifiedBy
-        WHERE zodiacSign = i_zodiacSign;
-        o_response := 'Success';
-        IF SQL%NOTFOUND THEN
-            INSERT INTO horoscope_tbl(zodiacSign, currentDay, narrative, modifiedBy)
-            VALUES (i_zodiacSign, i_currentDay, i_narrative, i_modifiedBy);
-            o_response := 'Success';
-        END IF;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_zodiacSign, 'HOROSCOPE_SAVED', 'Horoscope was successfully saved', i_modifiedBy);
-    EXCEPTION
-        WHEN OTHERS THEN ROLLBACK;
-        v_error_message := SUBSTR(SQLERRM, 1, 4000);
-        error_vault_pkg.store_error(
-                i_faultcode => SQLCODE,
-                i_faultmessage => v_error_message,
-                i_faultservice => 'profile_pkg (SAVE HOROSCOPE): ' || i_zodiacSign,
-                o_response => v_response
-        );
-        o_response := SQLCODE || SUBSTR(SQLERRM, 1, 2000);
-    END SaveHoroscope;
-
-    -- Find details from the constellation table
-    PROCEDURE GetHoroscope(
-        i_email IN VARCHAR2,
-        o_astrologyList OUT SYS_REFCURSOR)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-        v_zodiacSign    VARCHAR2(100);
-    BEGIN
-        SELECT zodiacSign INTO v_zodiacSign
-                          FROM person_tbl
-                          WHERE email = i_email;
-        OPEN o_astrologyList FOR
-            SELECT *
-            FROM horoscope_tbl
-            WHERE zodiacSign = v_zodiacSign;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'HOROSCOPE_REQUEST', 'Horoscope was successfully requested',i_email);
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
-                    i_faultcode => SQLCODE,
-                    i_faultmessage => v_error_message,
-                    i_faultservice => 'profile_pkg (GETHOROSCOPE): ' || i_email,
-                    o_response => v_response
-            );
-
-    END GetHoroscope;
-
-    -- Find details from the image table
-    PROCEDURE GetImage(
-        i_email IN VARCHAR2,
-        o_avatarList OUT SYS_REFCURSOR)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-        BEGIN
-            OPEN o_avatarList FOR
-                SELECT *
-                FROM images_tbl
-                WHERE email = i_email;
-            -- insert records for audit purpose
-            auth_pkg.audit(i_email, 'IMAGE_REQUEST', 'Image was successfully requested',i_email);
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-                v_error_message := SUBSTR(SQLERRM, 1, 4000);
-                error_vault_pkg.store_error(
-                        i_faultcode => SQLCODE,
-                        i_faultmessage => v_error_message,
-                        i_faultservice => 'profile_pkg (GETIMAGE): ' || i_email,
-                        o_response => v_response
-                );
-    END GetImage;
-
-    -- Find details from the person table
-    PROCEDURE GetPerson(
-        i_email IN VARCHAR2,
-        o_personList OUT SYS_REFCURSOR)
-    AS
-        v_error_message VARCHAR2(4000);
-        v_response      VARCHAR2(100);
-    BEGIN
-        OPEN o_personList FOR
-            SELECT *
-            FROM person_tbl
-            WHERE email = i_email;
-        -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'PERSON_REQUEST', 'Person record was successfully requested',i_email);
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
-                    i_faultcode => SQLCODE,
-                    i_faultmessage => v_error_message,
-                    i_faultservice => 'profile_pkg (GETPERSON): ' || i_email,
-                    o_response => v_response
-            );
-    END GetPerson;
-
     -- Find details from the address table
-    PROCEDURE GetAddress(
+    PROCEDURE getAddress(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         o_addressList OUT SYS_REFCURSOR)
     AS
-        v_error_message VARCHAR2(4000);
+        v_errorMessage VARCHAR2(4000);
         v_response      VARCHAR2(100);
     BEGIN
         OPEN o_addressList FOR
@@ -1346,24 +1139,33 @@ AS
             FROM address_tbl
             WHERE email = i_email;
         -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'ADDRESS_REQUEST', 'Address was successfully requested',i_email);
+        auth_pkg.audit(i_username,i_email, 'ADDRESS REQUEST', 'Address was successfully requested',i_username);
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
                     i_faultcode => SQLCODE,
-                    i_faultmessage => v_error_message,
+                    i_faultmessage => v_errorMessage,
                     i_faultservice => 'profile_pkg (GETADDRESS): ' || i_email,
                     o_response => v_response
             );
-    END GetAddress;
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETADDRESS): ' || i_email,
+                    o_response => v_response
+            );
+    END getAddress;
 
     -- Find details from the contact table
-    PROCEDURE GetContact(
+    PROCEDURE getContact(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         o_contactList OUT SYS_REFCURSOR)
     AS
-        v_error_message VARCHAR2(4000);
+        v_errorMessage VARCHAR2(4000);
         v_response      VARCHAR2(100);
     BEGIN
         OPEN o_contactList FOR
@@ -1371,24 +1173,139 @@ AS
             FROM contact_tbl
             WHERE email = i_email;
         -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'CONTACT_REQUEST', 'Contact was successfully requested',i_email);
+        auth_pkg.audit(i_username,i_email, 'CONTACT REQUEST', 'Contact was successfully requested',i_username);
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
                     i_faultcode => SQLCODE,
-                    i_faultmessage => v_error_message,
+                    i_faultmessage => v_errorMessage,
                     i_faultservice => 'profile_pkg (GETCONTACT): ' || i_email,
                     o_response => v_response
             );
-    END GetContact;
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETCONTACT): ' || i_email,
+                    o_response => v_response
+            );
+    END getContact;
+
+    -- Find details from the constellation table
+    PROCEDURE getHoroscope(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_astrologyList OUT SYS_REFCURSOR)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+        v_zodiacSign    VARCHAR2(100);
+    BEGIN
+        SELECT zodiacSign INTO v_zodiacSign
+        FROM person_tbl
+        WHERE email = i_email;
+        OPEN o_astrologyList FOR
+            SELECT *
+            FROM horoscope_tbl
+            WHERE zodiacSign = v_zodiacSign;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username,i_email, 'HOROSCOPE REQUEST', 'Horoscope was successfully requested',i_username);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETHOROSCOPE): ' || i_email,
+                    o_response => v_response
+            );
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETHOROSCOPE): ' || i_email,
+                    o_response => v_response
+            );
+    END getHoroscope;
+
+    -- Find details from the image table
+    PROCEDURE getImage(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_avatarList OUT SYS_REFCURSOR)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_avatarList FOR
+            SELECT *
+            FROM images_tbl
+            WHERE email = i_email;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username,i_email, 'IMAGE REQUEST', 'Image was successfully requested',i_username);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETIMAGE): ' || i_email,
+                    o_response => v_response
+            );
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETIMAGE): ' || i_email,
+                    o_response => v_response
+            );
+    END getImage;
+
+    -- Find details from the person table
+    PROCEDURE getPerson(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        o_personList OUT SYS_REFCURSOR)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        OPEN o_personList FOR
+            SELECT *
+            FROM person_tbl
+            WHERE email = i_email;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username, i_email, 'PERSON REQUEST', 'Person record was successfully requested',i_username);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETPERSON): ' || i_email,
+                    o_response => v_response
+            );
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETPERSON): ' || i_email,
+                    o_response => v_response
+            );
+    END getPerson;
 
     -- Find details from the contact table
-    PROCEDURE GetProfile(
+    PROCEDURE getProfile(
+        i_username IN VARCHAR2,
         i_email IN VARCHAR2,
         o_profileList OUT SYS_REFCURSOR)
     AS
-        v_error_message VARCHAR2(4000);
+        v_errorMessage VARCHAR2(4000);
         v_response      VARCHAR2(100);
     BEGIN
         OPEN o_profileList FOR
@@ -1396,20 +1313,28 @@ AS
             FROM profile_tbl
             WHERE email = i_email;
         -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'PROFILE_REQUEST', 'Profile was successfully requested',i_email);
+        auth_pkg.audit(i_username,i_email, 'PROFILE REQUEST', 'Profile was successfully requested',i_username);
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
                     i_faultcode => SQLCODE,
-                    i_faultmessage => v_error_message,
+                    i_faultmessage => v_errorMessage,
                     i_faultservice => 'profile_pkg (GETPROFILE): ' || i_email,
                     o_response => v_response
             );
-    END GetProfile;
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (GETPROFILE): ' || i_email,
+                    o_response => v_response
+            );
+    END getProfile;
 
     -- Find details user details
-    PROCEDURE GetSilhouette (
+    PROCEDURE getSilhouette (
         i_email           IN  VARCHAR2,
         o_personList      OUT SYS_REFCURSOR,
         o_avatarList      OUT SYS_REFCURSOR,
@@ -1418,10 +1343,12 @@ AS
         o_profileList     OUT SYS_REFCURSOR,
         o_astrologyList   OUT SYS_REFCURSOR)
     AS
-        v_error_message VARCHAR2(4000);
+        v_errorMessage VARCHAR2(4000);
         v_response      VARCHAR2(100);
         v_zodiacSign    VARCHAR2(100);
+        v_username    VARCHAR2(100);
     BEGIN
+        SELECT username INTO v_username FROM authentication_tbl WHERE email = i_email;
         -- Person
         OPEN o_personList FOR SELECT * FROM person_tbl WHERE email = i_email;
         -- Avatar
@@ -1436,19 +1363,337 @@ AS
         SELECT zodiacSign INTO v_zodiacSign FROM person_tbl WHERE email = i_email;
         OPEN o_astrologyList FOR SELECT * FROM horoscope_tbl WHERE zodiacSign = v_zodiacSign;
         -- insert records for audit purpose
-        auth_pkg.audit(i_email, 'SILHOUETTE_REQUEST', 'Silhouette was successfully requested',i_email);
+        auth_pkg.audit(v_username, i_email, 'SILHOUETTE REQUEST', 'Silhouette was successfully requested',v_username);
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            NULL;
-        WHEN OTHERS THEN
-            v_error_message := SUBSTR(SQLERRM, 1, 4000);
-            error_vault_pkg.store_error(
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
                     i_faultcode   => SQLCODE,
-                    i_faultmessage=> v_error_message,
+                    i_faultmessage=> v_errorMessage,
                     i_faultservice=> 'profile_pkg (GETSILHOUETTE): ' || i_email,
                     o_response    => v_response
             );
-    END GetSilhouette;
+        WHEN OTHERS THEN
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice=> 'profile_pkg (GETSILHOUETTE): ' || i_email,
+                    o_response => v_response
+            );
+    END getSilhouette;
+
+    PROCEDURE saveAddress(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_firstline IN VARCHAR2,
+        i_secondline IN VARCHAR2,
+        i_thirdline IN VARCHAR2,
+        i_city IN VARCHAR2,
+        i_postcode IN VARCHAR2,
+        i_country IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE address_tbl
+        SET email  = i_email,
+            firstline  = i_firstline,
+            secondline = i_secondline,
+            thirdline  = i_thirdline,
+            city       = i_city,
+            postcode   = i_postcode,
+            country    = i_country,
+            modifiedBy = i_username
+        WHERE email = i_email;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO address_tbl(username, email, firstline, secondline, thirdline, city, postcode, country, modifiedBy)
+            VALUES (i_username,i_email, i_firstline, i_secondline, i_thirdline, i_city, i_postcode, i_country, i_username);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username,i_email, 'ADDRESS SAVED', 'Address was successfully saved', i_username);
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE ADDRESS): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'address unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE ADDRESS): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'address unsuccessful';
+    END saveAddress;
+
+    PROCEDURE saveContact(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_channel IN VARCHAR2,
+        i_address IN VARCHAR2,
+        i_consent IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE contact_tbl
+        SET email  = i_email,
+            channel    = i_channel,
+            address    = i_address,
+            consent    = i_consent,
+            modifiedBy = i_username
+        WHERE email = i_email
+          AND channel = i_channel;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO contact_tbl(username, email, channel, address, consent, modifiedBy)
+            VALUES (i_username,i_email, i_channel, i_address, i_consent, i_username);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username,i_email, 'CONTACT SAVED', 'Contact was successfully saved', i_username);
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE CONTACT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'contact unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE CONTACT): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'contact unsuccessful';
+    END saveContact;
+
+    -- Update constellation table
+    PROCEDURE saveHoroscope(
+        i_zodiacSign IN VARCHAR2,
+        i_currentDay IN VARCHAR2,
+        i_narrative IN VARCHAR2,
+        i_modifiedBy IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE horoscope_tbl
+        SET zodiacSign     = i_zodiacSign,
+            currentDay = i_currentDay,
+            narrative  = i_narrative,
+            modifiedBy = i_modifiedBy
+        WHERE zodiacSign = i_zodiacSign;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO horoscope_tbl(zodiacSign, currentDay, narrative, modifiedBy)
+            VALUES (i_zodiacSign, i_currentDay, i_narrative, i_modifiedBy);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_modifiedBy,i_zodiacSign, 'HOROSCOPE SAVED', 'Horoscope was successfully saved', i_modifiedBy);
+        o_response := 'Success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE HOROSCOPE): ' || i_zodiacSign,
+                    o_response => v_response
+            );
+            o_response := 'horoscope unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'profile_pkg (SAVE HOROSCOPE): ' || i_zodiacSign,
+                o_response => v_response
+        );
+            o_response := 'horoscope unsuccessful';
+    END saveHoroscope;
+
+    -- Create or Update Identity
+    PROCEDURE saveImage(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_avatar IN BLOB,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE images_tbl
+        SET avatar     = i_avatar,
+            modifiedBy = i_username
+        WHERE email = i_email;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO images_tbl(username, email, avatar, modifiedBy)
+            VALUES (i_username,i_email, i_avatar, i_username);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username, i_email, 'IMAGE SAVED', 'Image was successfully saved', i_username);
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE IMAGE): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'images unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'profile_pkg (SAVE IMAGE): ' || i_email,
+                o_response => v_response
+        );
+            o_response := 'images unsuccessful';
+    END saveImage;
+
+    PROCEDURE savePerson(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_title IN VARCHAR2,
+        i_firstName IN VARCHAR2,
+        i_middleName IN VARCHAR2,
+        i_lastName IN VARCHAR2,
+        i_gender IN VARCHAR2,
+        i_birthday IN DATE,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE person_tbl
+        SET email  = i_email,
+            title      = i_title,
+            firstName  = i_firstName,
+            middleName = i_middleName,
+            lastName   = i_lastName,
+            gender     = i_gender,
+            birthday   = i_birthday,
+            modifiedBy = i_username
+        WHERE email = i_email;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO person_tbl(username, email, title, firstName, middleName, lastName, gender, birthday, modifiedBy)
+            VALUES (i_username, i_email, i_title, i_firstName, i_middleName, i_lastName, i_gender, i_birthday, i_username);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username, i_email, 'PERSON SAVED', 'Person record was successfully saved', i_username);
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE PERSON): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'person unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'profile_pkg (SAVE PERSON): ' || i_email,
+                o_response => v_response
+            );
+            o_response := 'person unsuccessful';
+    END savePerson;
+
+    -- Create or Update Profile
+    PROCEDURE saveProfile(
+        i_username IN VARCHAR2,
+        i_email IN VARCHAR2,
+        i_maritalStatus IN VARCHAR2,
+        i_height IN VARCHAR2,
+        i_weight IN VARCHAR2,
+        i_ethnicity IN VARCHAR2,
+        i_religion IN VARCHAR2,
+        i_eyeColour IN VARCHAR2,
+        i_phenotype IN VARCHAR2,
+        i_genotype IN VARCHAR2,
+        i_disability IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+        v_errorMessage VARCHAR2(4000);
+        v_response      VARCHAR2(100);
+    BEGIN
+        UPDATE profile_tbl
+        SET email         = i_email,
+            maritalStatus = i_maritalStatus,
+            height        = i_height,
+            weight        = i_weight,
+            ethnicity     = i_ethnicity,
+            religion      = i_religion,
+            eyeColour     = i_eyeColour,
+            phenotype     = i_phenotype,
+            genotype      = i_genotype,
+            disability    = i_disability,
+            modifiedBy    = i_username
+        WHERE email = i_email;
+        IF SQL%NOTFOUND THEN
+            INSERT INTO profile_tbl(username, email, maritalStatus, height, weight, ethnicity, religion, eyeColour, phenotype,
+                                    genotype, disability, modifiedBy)
+            VALUES (i_username,i_email, i_maritalStatus, i_height, i_weight, i_ethnicity, i_religion, i_eyeColour, i_phenotype,
+                    i_genotype, i_disability, i_username);
+        END IF;
+        -- insert records for audit purpose
+        auth_pkg.audit(i_username, i_email, 'PROFILE SAVED', 'Profile was successfully saved', i_username);
+        o_response := 'success';
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            ROLLBACK;
+            v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+            errorVault_pkg.storeError(
+                    i_faultcode => SQLCODE,
+                    i_faultmessage => v_errorMessage,
+                    i_faultservice => 'profile_pkg (SAVE PROFILE): ' || i_email,
+                    o_response => v_response
+            );
+            o_response := 'profile unsuccessful';
+        WHEN OTHERS THEN
+            ROLLBACK;
+        v_errorMessage := SUBSTR(SQLERRM, 1, 4000);
+        errorVault_pkg.storeError(
+                i_faultcode => SQLCODE,
+                i_faultmessage => v_errorMessage,
+                i_faultservice => 'profile_pkg (SAVE PROFILE): ' || i_email,
+                o_response => v_response
+        );
+            o_response := 'profile unsuccessful';
+    END saveProfile;
+
 END profile_pkg;
 /
 
@@ -1498,6 +1743,8 @@ VALUES ('Aquarius', 'Sep 17, 2025',
 INSERT INTO horoscope_tbl (zodiacSign, currentDay, narrative)
 VALUES ('Pisces', 'Sep 17, 2025',
         'You might be in a financial jam right now, Pisces. The stress of the situation has you considering some radical solutions. Would it really benefit your family if you took a second job? Confide in a friend and see if he or she can help you find a more agreeable solution. Perhaps a relative could give you a low-interest loan.');
+
+COMMIT;
 
 SHOW ERRORS
 /

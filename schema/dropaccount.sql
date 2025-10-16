@@ -1,15 +1,14 @@
-PROMPT "Creating Schema for hats Project."
+PROMPT "Dropping Account Schema"
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;
-
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
- * File:      install.sql                                                     *
- * Created:   07/09/2025, 18:43                                               *
- * Modified:  07/09/2025, 18:44                                               *
+ * File:      dropaccount.sql                                                 *
+ * Created:   13/10/2025, 11:05                                               *
+ * Modified:  13/10/2025, 11:05                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -34,11 +33,10 @@ SET DEFINE OFF;
  *                                                                            *
  ******************************************************************************/
 
---------------------------------------------
---  Connect to HATS and run the following --
---------------------------------------------
+PROMPT "Dropping Account Package"
+DROP PACKAGE account_pkg;
 
-@schema/errorvault.sql
-@schema/authentication.sql
-@schema/profile.sql
-@schema/account.sql
+SHOW ERRORS
+/
+
+PROMPT "End of dropping Authentication Schema."
