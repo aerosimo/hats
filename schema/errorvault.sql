@@ -8,7 +8,7 @@ SET DEFINE OFF;
  * Author:    eomisore                                                        *
  * File:      errorvault.sql                                                  *
  * Created:   07/09/2025, 23:54                                               *
- * Modified:  07/09/2025, 23:54                                               *
+ * Modified:  27/10/2025, 20:42                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -40,12 +40,13 @@ PROMPT "Creating Tables"
 -- Create the main error table
 CREATE TABLE errorVault_tbl
 (
-    errorId            NUMBER GENERATED ALWAYS AS IDENTITY,
-    errorReference     VARCHAR2(100 BYTE),
-    errorTime          TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-    errorCode          VARCHAR2(32 BYTE),
-    errorMessage       VARCHAR2(4000 BYTE),
-    errorService       VARCHAR2(2000 BYTE)
+    errorId        NUMBER GENERATED ALWAYS AS IDENTITY,
+    errorReference VARCHAR2(100 BYTE),
+    errorTime      TIMESTAMP    DEFAULT SYSTIMESTAMP NOT NULL,
+    errorCode      VARCHAR2(32 BYTE),
+    errorMessage   VARCHAR2(4000 BYTE),
+    errorService   VARCHAR2(2000 BYTE),
+    errorStatus    VARCHAR2(20) DEFAULT 'Open'       NOT NULL
 );
 
 PROMPT "Commenting Tables"
@@ -57,10 +58,12 @@ COMMENT ON COLUMN errorVault_tbl.errorTime IS 'This will be time at which the ex
 COMMENT ON COLUMN errorVault_tbl.errorCode IS 'This will be the error code. Code of the failure';
 COMMENT ON COLUMN errorVault_tbl.errorMessage IS 'This will be message about the exception. Capture the reason for the failure';
 COMMENT ON COLUMN errorVault_tbl.errorService IS 'Name of the Service where error occurred';
+COMMENT ON COLUMN errorVault_tbl.errorStatus IS 'State of the logged error: Open, Resolved, Closed or Pending';
 
 PROMPT "Setting Primary keys"
 -- Setting Primary Key
-ALTER TABLE errorVault_tbl ADD CONSTRAINT err_pk PRIMARY KEY (errorId);
+ALTER TABLE errorVault_tbl
+    ADD CONSTRAINT err_pk PRIMARY KEY (errorId);
 
 -- Index to help fetch recent alerts fast
 CREATE INDEX errorVault_tbl_idx ON errorVault_tbl (errorTime DESC);
@@ -117,14 +120,14 @@ HISTORY
 =================================================================================
 | 07-SEP-25	| eomisore 	| Created initial script.|
 =================================================================================
-| 11-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+| 27-OCT-25	| eomisore 	| Add update error procedure.|
 =================================================================================
 */
     -- Log new error
     PROCEDURE storeError(
-        i_faultcode IN errorVault_tbl.errorCode%TYPE,
-        i_faultmessage IN errorVault_tbl.errorMessage%TYPE,
-        i_faultservice IN errorVault_tbl.errorService%TYPE,
+        i_faultcode IN VARCHAR2,
+        i_faultmessage IN VARCHAR2,
+        i_faultservice IN VARCHAR2,
         o_response OUT VARCHAR2);
 
     -- Get top errors
@@ -132,11 +135,16 @@ HISTORY
         i_records IN NUMBER,
         o_errorList OUT SYS_REFCURSOR);
 
+    -- Update error status
+    PROCEDURE updateError(
+        i_errorReference IN VARCHAR2,
+        i_errorStatus IN VARCHAR2,
+        o_response OUT VARCHAR2);
+
 END errorVault_pkg;
 /
 
 PROMPT "Creating errorVault Body Package"
-
 -- Create Packages
 CREATE OR REPLACE PACKAGE BODY errorVault_pkg
 AS
@@ -172,20 +180,21 @@ HISTORY
 =================================================================================
 | 07-SEP-25	| eomisore 	| Created initial script.|
 =================================================================================
-| 11-OCT-25	| eomisore 	| Add extra feature such as delete, update.|
+| 27-OCT-25	| eomisore 	| Add update error procedure.|
 =================================================================================
 */
     -- Log new error
     PROCEDURE storeError(
-        i_faultcode IN errorVault_tbl.errorCode%TYPE,
-        i_faultmessage IN errorVault_tbl.errorMessage%TYPE,
-        i_faultservice IN errorVault_tbl.errorService%TYPE,
+        i_faultcode IN VARCHAR2,
+        i_faultmessage IN VARCHAR2,
+        i_faultservice IN VARCHAR2,
         o_response OUT VARCHAR2)
     AS
     BEGIN
         INSERT INTO errorVault_tbl (errorCode, errorMessage, errorService)
         VALUES (i_faultcode, i_faultmessage, i_faultservice)
         RETURNING errorReference INTO o_response;
+        COMMIT;
     EXCEPTION
         WHEN OTHERS THEN ROLLBACK;
         o_response := 'ERROR CODE: ' || SQLCODE || 'ERROR DETAILS: ' || SUBSTR(SQLERRM, 1, 2000);
@@ -208,6 +217,24 @@ HISTORY
             RAISE_APPLICATION_ERROR(-20001, 'Error fetching top records: ' || SQLERRM);
     END getErrors;
 
+    -- Update error status
+    PROCEDURE updateError(
+        i_errorReference IN VARCHAR2,
+        i_errorStatus IN VARCHAR2,
+        o_response OUT VARCHAR2)
+    AS
+    BEGIN
+        UPDATE errorVault_tbl
+        SET errorStatus = i_errorStatus
+        WHERE errorReference = i_errorReference;
+        o_response := 'success';
+        COMMIT;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN ROLLBACK;
+        o_response := 'ERROR CODE:TE-20001 ERROR DETAILS: invalid reference';
+        WHEN OTHERS THEN ROLLBACK;
+        o_response := 'ERROR CODE: ' || SQLCODE || 'ERROR DETAILS: ' || SUBSTR(SQLERRM, 1, 2000);
+    END updateError;
 END errorVault_pkg;
 /
 

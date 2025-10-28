@@ -9,7 +9,7 @@ SET DEFINE OFF;
  * Author:    eomisore                                                        *
  * File:      install.sql                                                     *
  * Created:   07/09/2025, 18:43                                               *
- * Modified:  07/09/2025, 18:44                                               *
+ * Modified:  28/10/2025, 21:07                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -39,6 +39,4 @@ SET DEFINE OFF;
 --------------------------------------------
 
 @schema/errorvault.sql
-@schema/authentication.sql
-@schema/profile.sql
 @schema/account.sql

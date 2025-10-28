@@ -2,14 +2,13 @@ PROMPT "Dropping Schema for hats Project."
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;
 
-
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      deinstall.sql                                                   *
  * Created:   07/09/2025, 18:45                                               *
- * Modified:  07/09/2025, 18:45                                               *
+ * Modified:  28/10/2025, 21:07                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -39,6 +38,4 @@ SET DEFINE OFF;
 --------------------------------------------
 
 @schema/droperrorvault.sql
-@schema/dropauthentication.sql
-@schema/dropprofile.sql
 @schema/dropaccount.sql

@@ -8,7 +8,7 @@ SET DEFINE OFF;
  * Author:    eomisore                                                        *
  * File:      dropaccount.sql                                                 *
  * Created:   13/10/2025, 11:05                                               *
- * Modified:  13/10/2025, 11:05                                               *
+ * Modified:  28/10/2025, 21:07                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
@@ -33,7 +33,33 @@ SET DEFINE OFF;
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Account Package"
+PROMPT "Dropping Tables"
+
+DROP TABLE multifactor_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE verification_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE credentials_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE person_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE address_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE images_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE contact_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE profile_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE horoscope_history_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE images_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE person_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE address_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE contact_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE profile_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE horoscope_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE multifactor_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE verification_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE scrutiny_tbl CASCADE CONSTRAINTS purge;
+DROP TABLE credentials_tbl CASCADE CONSTRAINTS purge;
+
+PROMPT "Dropping Packages"
+
+DROP PACKAGE auth_pkg;
+DROP PACKAGE profile_pkg;
+DROP PACKAGE utility_pkg;
 DROP PACKAGE account_pkg;
 
 SHOW ERRORS

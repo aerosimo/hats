@@ -9,7 +9,7 @@ SET DEFINE OFF;
  * Author:    eomisore                                                        *
  * File:      droperrorvault.sql                                              *
  * Created:   08/09/2025, 00:15                                               *
- * Modified:  24/09/2025, 00:32                                               *
+ * Modified:  27/10/2025, 00:32                                               *
  *                                                                            *
  * Copyright (c)  2025.  Aerosimo Ltd                                         *
  *                                                                            *
