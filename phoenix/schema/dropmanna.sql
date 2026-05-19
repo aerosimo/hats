@@ -1,17 +1,16 @@
-PROMPT "Dropping Error Vault Schema."
+PROMPT "Dropping Manna Schema"
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;
-
 
 /******************************************************************************
  * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
- * File:      droperrorvault.sql                                              *
- * Created:   08/09/2025, 00:15                                               *
- * Modified:  27/10/2025, 00:32                                               *
+ * File:      dropmanna.sql                                                   *
+ * Created:   25/01/2026, 22:30                                               *
+ * Modified:  25/01/2026, 22:30                                               *
  *                                                                            *
- * Copyright (c)  2025.  Aerosimo Ltd                                         *
+ * Copyright (c)  2026.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -34,13 +33,10 @@ SET DEFINE OFF;
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Package"
-DROP PACKAGE errorVault_pkg;
-
 PROMPT "Dropping Tables"
-DROP TABLE errorVault_tbl CASCADE CONSTRAINTS purge;
 
-SHOW ERRORS
-/
+DROP TABLE manna_tbl CASCADE CONSTRAINTS purge;
 
-PROMPT "End of dropping Error Vault Schema"
+PROMPT "Dropping Packages"
+
+DROP PACKAGE manna_pkg;

@@ -1,16 +1,13 @@
-PROMPT "Dropping Account Schema"
-SET SERVEROUTPUT ON;
-SET DEFINE OFF;
 
 /******************************************************************************
- * This piece of work is to enhance hats project functionality.               *
+ * This piece of work is to enhance Phoenix initial setup functionality.      *
  *                                                                            *
  * Author:    eomisore                                                        *
- * File:      dropaccount.sql                                                 *
- * Created:   13/10/2025, 11:05                                               *
- * Modified:  28/10/2025, 21:07                                               *
+ * File:      install.sql                                                     *
+ * Created:   20/01/2026, 19:10                                               *
+ * Modified:  20/01/2026, 20:42                                               *
  *                                                                            *
- * Copyright (c)  2025.  Aerosimo Ltd                                         *
+ * Copyright (c)  2026.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -33,36 +30,13 @@ SET DEFINE OFF;
  *                                                                            *
  ******************************************************************************/
 
-PROMPT "Dropping Tables"
+set serveroutput on;
+set define off;
 
-DROP TABLE multifactor_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE verification_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE credentials_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE person_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE address_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE images_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE contact_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE profile_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE horoscope_history_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE images_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE person_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE address_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE contact_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE profile_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE horoscope_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE multifactor_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE verification_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE scrutiny_tbl CASCADE CONSTRAINTS purge;
-DROP TABLE credentials_tbl CASCADE CONSTRAINTS purge;
+----------------------------------------------------
+--  Connect as SYS and run
+----------------------------------------------------
 
-PROMPT "Dropping Packages"
+@schema/setup.sql
 
-DROP PACKAGE auth_pkg;
-DROP PACKAGE profile_pkg;
-DROP PACKAGE utility_pkg;
-DROP PACKAGE account_pkg;
-
-SHOW ERRORS
-/
-
-PROMPT "End of dropping Authentication Schema."
+EXIT;

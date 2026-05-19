@@ -7,10 +7,10 @@ SET DEFINE OFF;
  *                                                                            *
  * Author:    eomisore                                                        *
  * File:      errorvault.sql                                                  *
- * Created:   07/09/2025, 23:54                                               *
- * Modified:  27/10/2025, 20:42                                               *
+ * Created:   20/01/2026, 19:10                                               *
+ * Modified:  20/01/2026, 20:42                                               *
  *                                                                            *
- * Copyright (c)  2025.  Aerosimo Ltd                                         *
+ * Copyright (c)  2026.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -42,11 +42,12 @@ CREATE TABLE errorVault_tbl
 (
     errorId        NUMBER GENERATED ALWAYS AS IDENTITY,
     errorReference VARCHAR2(100 BYTE),
-    errorTime      TIMESTAMP    DEFAULT SYSTIMESTAMP NOT NULL,
+    errorTime      TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
     errorCode      VARCHAR2(32 BYTE),
     errorMessage   VARCHAR2(4000 BYTE),
     errorService   VARCHAR2(2000 BYTE),
-    errorStatus    VARCHAR2(20) DEFAULT 'Open'       NOT NULL
+    errorStatus    VARCHAR2(20) DEFAULT 'OPEN' NOT NULL,
+    errorSate      VARCHAR2(20) DEFAULT 'RECOVERY_REQUIRED' NOT NULL
 );
 
 PROMPT "Commenting Tables"
@@ -58,7 +59,8 @@ COMMENT ON COLUMN errorVault_tbl.errorTime IS 'This will be time at which the ex
 COMMENT ON COLUMN errorVault_tbl.errorCode IS 'This will be the error code. Code of the failure';
 COMMENT ON COLUMN errorVault_tbl.errorMessage IS 'This will be message about the exception. Capture the reason for the failure';
 COMMENT ON COLUMN errorVault_tbl.errorService IS 'Name of the Service where error occurred';
-COMMENT ON COLUMN errorVault_tbl.errorStatus IS 'State of the logged error: Open, Resolved, Closed or Pending';
+COMMENT ON COLUMN errorVault_tbl.errorStatus IS 'Status of the logged error: OPEN, RESOLVED, CLOSED or PENDING';
+COMMENT ON COLUMN errorVault_tbl.errorSate IS 'State of the logged error: RECOVERY_REQUIRED, RECOVERED or NON_RECOVERABLE';
 
 PROMPT "Setting Primary keys"
 -- Setting Primary Key
@@ -75,7 +77,7 @@ CREATE OR REPLACE TRIGGER errorVault_trg
     ON errorVault_tbl
     FOR EACH ROW
 BEGIN
-    SELECT 'ERR|' || dbms_random.String('X', 6) INTO :NEW.errorReference FROM dual;
+    SELECT 'ERR|' || dbms_random.String('X', 10) INTO :NEW.errorReference FROM dual;
 END;
 /
 
@@ -90,7 +92,7 @@ CREATE OR REPLACE PACKAGE errorVault_pkg
 AS
     /* Header Package
 =================================================================================
-  Copyright (c) 2025 Aerosimo
+  Copyright (c) 2026 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -118,9 +120,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 07-SEP-25	| eomisore 	| Created initial script.|
-=================================================================================
-| 27-OCT-25	| eomisore 	| Add update error procedure.|
+| 20-JAN-26	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Log new error
@@ -139,6 +139,7 @@ HISTORY
     PROCEDURE updateError(
         i_errorReference IN VARCHAR2,
         i_errorStatus IN VARCHAR2,
+        i_errorState IN VARCHAR2,
         o_response OUT VARCHAR2);
 
 END errorVault_pkg;
@@ -150,7 +151,7 @@ CREATE OR REPLACE PACKAGE BODY errorVault_pkg
 AS
     /* Body Package
 =================================================================================
-  Copyright (c) 2025 Aerosimo
+  Copyright (c) 2026 Aerosimo
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -178,9 +179,7 @@ HISTORY
 =================================================================================
 | DATE 		| Owner 	| Activity
 =================================================================================
-| 07-SEP-25	| eomisore 	| Created initial script.|
-=================================================================================
-| 27-OCT-25	| eomisore 	| Add update error procedure.|
+| 20-JAN-26	| eomisore 	| Created initial script.|
 =================================================================================
 */
     -- Log new error
@@ -194,7 +193,6 @@ HISTORY
         INSERT INTO errorVault_tbl (errorCode, errorMessage, errorService)
         VALUES (i_faultcode, i_faultmessage, i_faultservice)
         RETURNING errorReference INTO o_response;
-        COMMIT;
     EXCEPTION
         WHEN OTHERS THEN ROLLBACK;
         o_response := 'ERROR CODE: ' || SQLCODE || 'ERROR DETAILS: ' || SUBSTR(SQLERRM, 1, 2000);
@@ -206,14 +204,20 @@ HISTORY
         o_errorList OUT SYS_REFCURSOR)
     AS
     BEGIN
-        OPEN o_errorList FOR
-            SELECT errorId, errorReference, errorTime, errorCode, errorMessage, errorService
-            FROM errorVault_tbl
-            ORDER BY errorTime DESC
+        IF i_records IS NOT NULL THEN
+            OPEN o_errorList FOR
+                SELECT *
+                FROM errorVault_tbl
+                ORDER BY errorTime DESC
                 FETCH FIRST i_records ROWS ONLY;
+        ELSE
+            OPEN o_errorList FOR
+                SELECT *
+                FROM errorVault_tbl
+                ORDER BY errorTime DESC;
+        END IF;
     EXCEPTION
-        WHEN OTHERS THEN
-            ROLLBACK;
+        WHEN OTHERS THEN ROLLBACK;
             RAISE_APPLICATION_ERROR(-20001, 'Error fetching top records: ' || SQLERRM);
     END getErrors;
 
@@ -221,16 +225,16 @@ HISTORY
     PROCEDURE updateError(
         i_errorReference IN VARCHAR2,
         i_errorStatus IN VARCHAR2,
+        i_errorState IN VARCHAR2,
         o_response OUT VARCHAR2)
     AS
     BEGIN
         UPDATE errorVault_tbl
-        SET errorStatus = i_errorStatus
+        SET errorStatus = i_errorStatus, errorSate = i_errorState
         WHERE errorReference = i_errorReference;
         o_response := 'success';
-        COMMIT;
     EXCEPTION
-        WHEN NO_DATA_FOUND THEN ROLLBACK;
+        WHEN NO_DATA_FOUND THEN
         o_response := 'ERROR CODE:TE-20001 ERROR DETAILS: invalid reference';
         WHEN OTHERS THEN ROLLBACK;
         o_response := 'ERROR CODE: ' || SQLCODE || 'ERROR DETAILS: ' || SUBSTR(SQLERRM, 1, 2000);

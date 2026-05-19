@@ -1,4 +1,4 @@
-PROMPT "Dropping Schema for hats Project."
+PROMPT "Dropping Country Schema."
 SET SERVEROUTPUT ON;
 SET DEFINE OFF;
 
@@ -6,11 +6,11 @@ SET DEFINE OFF;
  * This piece of work is to enhance hats project functionality.               *
  *                                                                            *
  * Author:    eomisore                                                        *
- * File:      deinstall.sql                                                   *
- * Created:   07/09/2025, 18:45                                               *
- * Modified:  28/10/2025, 21:07                                               *
+ * File:      dropcountry.sql                                                 *
+ * Created:   02/02/2026, 20:32                                               *
+ * Modified:  02/02/2026, 20:32                                               *
  *                                                                            *
- * Copyright (c)  2025.  Aerosimo Ltd                                         *
+ * Copyright (c)  2026.  Aerosimo Ltd                                         *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -33,9 +33,15 @@ SET DEFINE OFF;
  *                                                                            *
  ******************************************************************************/
 
---------------------------------------------
---  Connect to HATS and run the following --
---------------------------------------------
+PROMPT "Dropping Country Tables"
 
-@schema/droperrorvault.sql
-@schema/dropaccount.sql
+DROP TABLE country_tbl CASCADE CONSTRAINTS purge;
+
+PROMPT "Dropping Country Package"
+
+DROP PACKAGE nationality_pkg;
+
+SHOW ERRORS
+/
+
+PROMPT "End of dropping Country Schema."
